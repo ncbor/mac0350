@@ -4,7 +4,7 @@
 - [x] [Exercícios da Aula 0/1](https://webdev2025.lol/webmac/exercicios/ex_aula1.html)
 
 ## Aula 2: Javascript
-- [ ] [Exercício Sala](https://webdev2025.lol/webmac/exercicios/ex_sala2.html)
+- [x] [Exercício Sala](https://webdev2025.lol/webmac/exercicios/ex_sala2.html)
 - [ ] [Exercício Casa](https://webdev2025.lol/webmac/exercicios/ex_casa2.html)
 
 ## Aula 3: Manipulação da DOM
