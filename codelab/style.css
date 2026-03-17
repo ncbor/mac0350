@@ -1,0 +1,160 @@
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    /* box-box: border-box; */
+    box-sizing: border-box
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image:url("https://avatars.worldcubeassociation.org/tfztv58obrqgwgrc6xg9r5n0xvm9");
+    background-size:cover;
+    /* background-position: center center; */
+    /* background-position: center 50px; */
+    background-position: 50% 24%;
+    height: 10vh;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+.main-header {
+    /* background-color: #fff; */
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    flex: 1;
+}
+
+.main-container {
+    display: flex;
+    flex-wrap: wrap; 
+    margin-top: 20px;
+    margin-bottom:20px;
+    gap: 20px;
+}
+
+.sidebar {
+    flex: 1 1 200px; 
+    /* background: #004a8e; Azul USP aproximado */
+    background: rgba(0, 74, 142, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.sidebar h3 {
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.sidebar ul li a {
+    color: #ddd;
+    text-decoration: none;
+    display: block;
+    padding: 5px 0;
+    transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+    color: #fff;
+    padding-left: 5px;
+}
+
+/* Área de Conteúdo */
+.content {
+    flex: 3 1 600px; /* Ocupa 3x mais espaço que a sidebar */
+}
+
+.login-card {
+    /* background: white; */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    color: #000000;
+
+}
+
+.login-card h2 {
+    margin-bottom: 20px;
+    color: #000000;
+}
+
+/* Formulário */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.btn-submit {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #e68a00;
+}
+
+/* Footer */
+.main-footer {
+    text-align: center;
+    padding: 0.5rem; 
+    background: rgba(0, 0, 0, 0.8); 
+    color: #fff;
+    width: 100%;
+    /* margin-top: auto; */
+    position: sticky;
+}
+
+.footer-links a {
+    color: #ff9800;
+    text-decoration: none;
+}
+
+
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column; 
+    }
+    
+    .sidebar {
+        order: 2;    }
+}
