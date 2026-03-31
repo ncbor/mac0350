@@ -1,0 +1,38 @@
+<tr id="event-row-{{ event.id }}">
+    <td colspan="5" style="padding: 0;">
+        <form hx-put="/events/{{ event.id }}" hx-target="#event-row-{{ event.id }}" hx-swap="outerHTML" style="margin: 0; padding: 1rem; background: var(--bg-color); border: 1px solid var(--primary-hover);">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label>Título</label>
+                    <input type="text" name="title" value="{{ event.title }}" required>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label>Data</label>
+                    <input type="datetime-local" name="date" value="{{ event.date }}" required>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label>Grupo</label>
+                    <select name="group_id" required>
+                        {% for g in groups %}
+                            <option value="{{ g.id }}" {% if g.id == event.group_id %}selected{% endif %}>{{ g.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label>Descrição</label>
+                    <input type="text" name="description" value="{{ event.description }}" required>
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button type="submit" class="btn">Salvar</button>
+                    <!-- Button to cancel editing: simply fetches the row back -->
+                    <button type="button" class="btn btn-outline" 
+                            hx-get="/events/{{ event.id }}/row" 
+                            hx-target="#event-row-{{ event.id }}" 
+                            hx-swap="outerHTML">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </td>
+</tr>

@@ -1,0 +1,22 @@
+<tr id="event-row-{{ event.id }}">
+    <td>{{ event.date }}</td>
+    <td>{{ event.group.name if event.group else '-' }}</td>
+    <td><strong>{{ event.title }}</strong></td>
+    <td>{{ event.description }}</td>
+    <td>
+        <button class="btn btn-outline" 
+                hx-get="/events/{{ event.id }}/edit" 
+                hx-target="#event-row-{{ event.id }}" 
+                hx-swap="outerHTML">
+            Editar
+        </button>
+        <!-- Button to delete this row entirely -->
+        <button class="btn btn-danger" 
+                hx-delete="/events/{{ event.id }}" 
+                hx-target="#event-row-{{ event.id }}" 
+                hx-swap="outerHTML" 
+                hx-confirm="Deletar este evento?">
+            Deletar
+        </button>
+    </td>
+</tr>

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    {% if group.logo_url %}
+    <img src="{{ group.logo_url }}" alt="Logo {{ group.name }}" style="max-height: 250px; object-fit: contain;">
+    {% endif %}
+    <div class="card-content">
+        <h1>{{ group.name }}</h1>
+        <p class="subtitle">{{ group.description }}</p>
+
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Projetos</a>
+            <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Documentos</a>
+            <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Vídeos</a>
+        </div>
+    </div>
+</div>
+
+<h2>Próximos Eventos do {{ group.name }}</h2>
+<div class="table-container" style="margin-top: 1rem;">
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Descrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in group.events %}
+            <tr>
+                <td>{{ event.date }}</td>
+                <td><strong>{{ event.title }}</strong></td>
+                <td>{{ event.description }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Nenhum evento programado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="/" class="btn btn-outline">Voltar</a>
+</div>
+{% endblock %}

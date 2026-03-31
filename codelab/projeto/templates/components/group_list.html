@@ -1,0 +1,16 @@
+<div class="card-grid">
+    {% for group in groups %}
+    <div class="card">
+        {% if group.logo_url %}
+        <img src="{{ group.logo_url }}" alt="Logo {{ group.name }}">
+        {% endif %}
+        <div class="card-content">
+            <h3>{{ group.name }}</h3>
+            <p>{{ group.description }}</p>
+            <a href="/group/{{ group.id }}" class="btn">Página do Grupo</a>
+        </div>
+    </div>
+    {% else %}
+    <p>Nenhum grupo encontrado.</p>
+    {% endfor %}
+</div>

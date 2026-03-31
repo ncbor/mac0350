@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h1>Grupos de Extensão</h1>
+    <p class="subtitle">Conheça, explore e ingresse nos grupos do Bacharelado em Ciência da Computação.</p>
+
+    <div class="search-container">
+        <input 
+            class="search-input" 
+            type="search" 
+            name="q" 
+            placeholder="Buscar grupo por nome..."
+            hx-get="/" 
+            hx-trigger="keyup changed delay:300ms, search" 
+            hx-target="#groups-grid">
+    </div>
+
+    <div id="groups-grid">
+        {% include "components/group_list.html" %}
+    </div>
+</section>
+{% endblock %}
