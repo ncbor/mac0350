@@ -12,7 +12,6 @@
                 <th>Grupo</th>
                 <th>Evento</th>
                 <th>Descrição</th>
-                <th>Ações</th>
             </tr>
         </thead>
         <tbody id="events-tbody">
@@ -23,30 +22,4 @@
     </table>
 </div>
 
-<h2 style="margin-top: 2rem;">Adicionar Evento</h2>
-<div class="card" style="margin-top: 1rem; padding: 2rem;">
-    <form hx-post="/events" hx-target="#events-tbody" hx-swap="beforeend" hx-on::after-request="this.reset()">
-        <div class="form-group">
-            <label for="title">Título do Evento</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <label for="date">Data (ex: 2026-05-15T18:00)</label>
-            <input type="datetime-local" id="date" name="date" required>
-        </div>
-        <div class="form-group">
-            <label for="group_id">Grupo Organizador</label>
-            <select id="group_id" name="group_id" required>
-                {% for group in groups %}
-                    <option value="{{ group.id }}">{{ group.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="description">Descrição</label>
-            <textarea id="description" name="description" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn">Cadastrar Evento</button>
-    </form>
-</div>
 {% endblock %}

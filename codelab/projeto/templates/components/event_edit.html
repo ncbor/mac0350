@@ -26,7 +26,7 @@
                     <button type="submit" class="btn">Salvar</button>
                     <!-- Button to cancel editing: simply fetches the row back -->
                     <button type="button" class="btn btn-outline" 
-                            hx-get="/events/{{ event.id }}/row" 
+                            hx-get="/events/{{ event.id }}/row_admin" 
                             hx-target="#event-row-{{ event.id }}" 
                             hx-swap="outerHTML">
                         Cancelar

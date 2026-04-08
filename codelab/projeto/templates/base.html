@@ -17,14 +17,32 @@
         <nav class="nav-links">
             <a href="/">Grupos</a>
             <a href="/calendar">Calendário</a>
+            <a href="/admin" id="admin-link" style="display: none;">Admin</a>
+            <a href="/login" id="login-link">Entrar</a>
         </nav>
+        <script>
+            if (localStorage.getItem('token')) {
+                document.getElementById('admin-link').style.display = 'inline';
+                const link = document.getElementById('login-link');
+                link.innerText = "Sair";
+                link.href = "#";
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                };
+            }
+        </script>
     </header>
     <main>
         {% block content %}{% endblock %}
     </main>
     <script>
         document.body.addEventListener('htmx:configRequest', (event) => {
-            // Adds small animation hooks if desired
+            const token = localStorage.getItem('token');
+            if (token) {
+                event.detail.headers['Authorization'] = `Bearer ${token}`;
+            }
         });
     </script>
 </body>

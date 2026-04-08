@@ -1,0 +1,5 @@
+- Arrumar layout das datas do calendar
+- Implmenetar layout de calendário
+- OAuth pra cada grupo (só pode mexer nos próprios eventos) + admin supremo que coordena tudo isso
+- Dark mode
+- Tirar lixos dos códigos
