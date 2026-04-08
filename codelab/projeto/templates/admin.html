@@ -11,13 +11,18 @@
                 <th>Data</th>
                 <th>Grupo</th>
                 <th>Evento</th>
+                <th>Local</th>
                 <th>Descrição</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody id="events-tbody">
             {% for event in events %}
-                {% include "components/event_row_admin.html" %}
+            {% include "components/event_row_admin.html" %}
+            {% else %}
+            <tr id="no-events-msg">
+                <td colspan="6" style="text-align: center; padding: 2rem;">Nenhum evento cadastrado.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -30,17 +35,27 @@
             <label for="title">Título do Evento</label>
             <input type="text" id="title" name="title" required>
         </div>
-        <div class="form-group">
-            <label for="date">Data (ex: 2026-05-15T18:00)</label>
-            <input type="datetime-local" id="date" name="date" required>
+        <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+                <label for="date">Data do Evento</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label for="time">Hora do Evento</label>
+                <input type="time" id="time" name="time" required>
+            </div>
         </div>
         <div class="form-group">
             <label for="group_id">Grupo Organizador</label>
             <select id="group_id" name="group_id" required>
                 {% for group in groups %}
-                    <option value="{{ group.id }}">{{ group.name }}</option>
+                <option value="{{ group.id }}">{{ group.name }}</option>
                 {% endfor %}
             </select>
+        </div>
+        <div class="form-group">
+            <label for="location">Local</label>
+            <input type="text" id="location" name="location">
         </div>
         <div class="form-group">
             <label for="description">Descrição</label>
@@ -50,9 +65,65 @@
     </form>
 </div>
 
+{% if current_group %}
+<h2 style="margin-top: 3rem;">Configurações do Grupo</h2>
+<div class="card" style="margin-top: 1rem; padding: 2rem;">
+    <div id="status-message"></div>
+    <form hx-post="/groups/update" hx-encoding="multipart/form-data" hx-target="#status-message" hx-swap="innerHTML">
+        <div class="form-group">
+            <label>Descrição do Grupo</label>
+            <textarea name="description" rows="4" required>{{ current_group.description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Website</label>
+            <input type="url" name="website" value="{{ current_group.website }}">
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+                <label>Logo (URL externa)</label>
+                <input type="text" name="logo_url" value="{{ current_group.logo_url }}">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Ou subir arquivo de Logo</label>
+                <input type="file" name="logo_file" accept="image/*">
+            </div>
+        </div>
+        <button type="submit" class="btn">Salvar Alterações do Perfil</button>
+    </form>
+</div>
+{% endif %}
+
 <script>
-if (!localStorage.getItem('token')) {
-    window.location.href = '/login';
-}
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login';
+    } else {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.role === "group") {
+                const groupId = payload.group_id;
+
+                // Oculta eventos de outros grupos
+                document.querySelectorAll('.admin-event-row').forEach(row => {
+                    if (row.getAttribute('data-group-id') != groupId) {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Trava o select para apenas o seu grupo
+                const select = document.getElementById('group_id');
+                Array.from(select.options).forEach(opt => {
+                    if (opt.value != groupId) {
+                        opt.disabled = true;
+                        opt.style.display = 'none';
+                    } else {
+                        opt.selected = true;
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Token decoding error", e);
+        }
+    }
 </script>
 {% endblock %}

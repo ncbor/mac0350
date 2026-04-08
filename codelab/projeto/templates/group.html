@@ -13,6 +13,11 @@
             <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Projetos</a>
             <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Documentos</a>
             <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Vídeos</a>
+            {% if group.website %}
+            <a href="{{ group.website }}" class="btn btn-outline" target="_blank" rel="noopener"
+                style="margin-left: auto;">Acessar
+                Site do Grupo</a>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -24,19 +29,49 @@
             <tr>
                 <th>Data</th>
                 <th>Evento</th>
+                <th>Local</th>
                 <th>Descrição</th>
             </tr>
         </thead>
         <tbody>
-            {% for event in group.events %}
+            {% for event in future_events %}
             <tr>
-                <td>{{ event.date }}</td>
+                <td>{{ event.date | datetime }}</td>
                 <td><strong>{{ event.title }}</strong></td>
+                <td>{{ event.location }}</td>
                 <td>{{ event.description }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">Nenhum evento programado.</td>
+                <td colspan="4">Nenhum evento programado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2 style="margin-top: 2rem;">Eventos Passados</h2>
+<div class="table-container" style="margin-top: 1rem; opacity: 0.7;">
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+                <th>Descrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in past_events %}
+            <tr>
+                <td>{{ event.date | datetime }}</td>
+                <td><strong>{{ event.title }}</strong></td>
+                <td>{{ event.location }}</td>
+                <td>{{ event.description }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Nenhum evento passado.</td>
             </tr>
             {% endfor %}
         </tbody>

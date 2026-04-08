@@ -1,6 +1,7 @@
 <tr id="event-row-{{ event.id }}">
-    <td>{{ event.date }}</td>
+    <td>{{ event.date | datetime }}</td>
     <td>{{ event.group.name if event.group else '-' }}</td>
     <td><strong>{{ event.title }}</strong></td>
+    <td>{{ event.location }}</td>
     <td>{{ event.description }}</td>
 </tr>

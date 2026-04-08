@@ -6,9 +6,19 @@
                     <label>Título</label>
                     <input type="text" name="title" value="{{ event.title }}" required>
                 </div>
+                <div style="display: flex; gap: 0.5rem; flex: 1; min-width: 200px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Data</label>
+                        <input type="date" name="date" value="{{ event.date[:10] }}" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Hora</label>
+                        <input type="time" name="time" value="{{ event.date[11:16] }}" required>
+                    </div>
+                </div>
                 <div class="form-group" style="flex: 1; min-width: 200px;">
-                    <label>Data</label>
-                    <input type="datetime-local" name="date" value="{{ event.date }}" required>
+                    <label>Local</label>
+                    <input type="text" name="location" value="{{ event.location }}">
                 </div>
                 <div class="form-group" style="flex: 1; min-width: 200px;">
                     <label>Grupo</label>

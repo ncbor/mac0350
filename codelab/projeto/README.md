@@ -20,6 +20,20 @@ uvicorn main:app --reload
 
 Acesse no seu navegador: `http://localhost:8000`
 
+### Como Logar no Painel Administrativo
+
+A plataforma suporta dois níveis de hierarquia de acesso (role-based) para facilitar o gerenciamento cooperativo:
+
+**1. Administrador Central**
+Possui poder de gerenciar, editar, cadastrar e apagar **todos os eventos de qualquer grupo**.
+- **Usuário**: `admin`
+- **Senha**: `admin`
+
+**2. Acesso Limitado por Grupo**
+Para limitar os líderes a editar/apagar APENAS os eventos da sua própria página, pode-se logar com as credenciais cadastradas daquele grupo. O painel listará exclusivamente as suas propriedades. O nome de usuário e senha devem ser **a primeira palavra do nome do grupo, em letras minúsculas**.
+- **Usuário**: `usp` (para USP Game Dev), `uspcodelab` (para USPCodeLab), `flusp` (para FLUSP), `hardware` (para Hardware Livre), etc.
+- **Senha**: Igual ao usuário (ex: `usp`, `uspcodelab`, `flusp`, etc)
+
 ## Funcionalidades Implementadas
 
 ### 1. Requisitos de Telas: HTML, CSS, JS e Responsividade
