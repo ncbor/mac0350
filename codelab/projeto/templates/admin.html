@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Painel de Administração</h1>
-<p class="subtitle">Gerencie os eventos de todos os grupos.</p>
+<h1>Painel de Administração - {{ current_group.name if current_group else 'Admin' }}</h1>
+<p class="subtitle">
+    {% if current_group %}
+    Gerencie os dados do grupo {{ current_group.name }}.
+    {% else %}
+    Gerencie os eventos de todos os grupos.
+    {% endif %}
+</p>
 
 <div class="table-container">
     <table>
@@ -17,12 +23,11 @@
             </tr>
         </thead>
         <tbody id="events-tbody">
+            <tr id="no-events-msg" style="display: none;">
+                <td colspan="6" style="opacity: 0.7; padding: 1rem;">Nenhum evento programado.</td>
+            </tr>
             {% for event in events %}
             {% include "components/event_row_admin.html" %}
-            {% else %}
-            <tr id="no-events-msg">
-                <td colspan="6" style="text-align: center; padding: 2rem;">Nenhum evento cadastrado.</td>
-            </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -95,6 +100,20 @@
 
 <script>
     const token = localStorage.getItem('token');
+    const noEventsMsg = document.getElementById('no-events-msg');
+
+    function checkTableEmpty() {
+        // Conta quantas linhas de evento estão visíveis (excluindo a linha de "nenhum evento")
+        const visibleEvents = Array.from(document.querySelectorAll('.admin-event-row'))
+            .filter(row => row.style.display !== 'none');
+
+        if (visibleEvents.length === 0) {
+            noEventsMsg.style.display = '';
+        } else {
+            noEventsMsg.style.display = 'none';
+        }
+    }
+
     if (!token) {
         window.location.href = '/login';
     } else {
@@ -121,8 +140,20 @@
                     }
                 });
             }
+
+            // Verifica se a tabela ficou vazia após o filtro
+            checkTableEmpty();
+
+            // Re-verifica sempre que o HTMX adicionar um novo evento
+            document.body.addEventListener('htmx:afterSwap', function (evt) {
+                if (evt.detail.target.id === 'events-tbody') {
+                    checkTableEmpty();
+                }
+            });
+
         } catch (e) {
             console.error("Token decoding error", e);
+            noEventsMsg.style.display = ''; // Fallback
         }
     }
 </script>
