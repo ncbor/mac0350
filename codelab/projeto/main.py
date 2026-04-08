@@ -350,4 +350,4 @@ async def update_group_profile(
     session.commit()
     session.refresh(group)
     
-    return f'<div class="alert alert-success" style="padding: 1rem; background: #d4edda; color: #155724; border-radius: 4px; margin-bottom: 1rem;">Perfil do grupo {group.name} atualizado com sucesso!</div>'
+    return f'<div class="alert alert-success" style="padding: 1rem; background: var(--card-bg); color: var(--success); border: 1px solid var(--success); border-radius: 4px; margin-bottom: 1rem;">Perfil do grupo {group.name} atualizado com sucesso!</div>'

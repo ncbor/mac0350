@@ -6,13 +6,16 @@
     <p class="subtitle">Conheça, explore e participe dos grupos do Bacharelado em Ciência da Computação e de outros
         cursos do IME-USP :)</p>
 
-    <div class="search-container" style="display: flex; gap: 1rem; max-width: 600px; align-items: center; margin-bottom: 2rem;">
-        <input class="search-input" style="flex: 1; margin: 0; padding: 0.8rem 1rem;" type="search" name="q" placeholder="Buscar grupo por nome..." hx-get="/"
-            hx-trigger="keyup changed delay:300ms, search" hx-include="[name='sort']" hx-target="#groups-grid">
-        <select name="sort" class="search-input" style="width: auto; margin: 0; padding: 0.8rem 1rem; height: 100%; text-align-last: center; cursor: pointer;" hx-get="/" hx-target="#groups-grid" hx-include="[name='q']">
+    <div class="search-container"
+        style="display: flex; gap: 1rem; max-width: 600px; align-items: center; margin-bottom: 2rem;">
+        <input class="search-input" style="flex: 1; margin: 0; padding: 0.8rem 1rem;" type="search" name="q"
+            placeholder="Buscar grupo por nome..." hx-get="/" hx-trigger="keyup changed delay:300ms, search"
+            hx-include="[name='sort']" hx-target="#groups-grid">
+        <select name="sort" class="sort-select" hx-get="/" hx-target="#groups-grid" hx-include="[name='q']">
+            <!-- <select name="sort" class="search-input" style="width: auto; margin: 0; padding: 0.8rem 1rem; height: 100%; text-align-last: center; cursor: pointer;" hx-get="/" hx-target="#groups-grid" hx-include="[name='q']"></select> -->
             <option value="default">Ordenação: Padrão</option>
-            <option value="alpha">Ordem: A-Z</option>
-            <option value="alpha_desc">Ordem: Z-A</option>
+            <option value="alpha">Ordenação: A-Z</option>
+            <option value="alpha_desc">Ordenação: Z-A</option>
         </select>
     </div>
 
