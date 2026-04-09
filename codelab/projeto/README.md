@@ -113,8 +113,6 @@ Aplicou-se o `FastAPI` e a lib de banco de dados ensinada `SQLModel` gerando 2 e
 
 #### Descrição do ciclo de CRUD completo usando HTMX
 
-#### Descrição do ciclo de CRUD completo usando HTMX
-
 No painel `/admin`, o gerenciamento de eventos é feito através de requisições assíncronas que atualizam apenas partes específicas da página:
 
 - **Ler (hx-get)**: Além da busca na home, o painel administrativo carrega fragmentos de edição (`/events/{id}/edit`) e linhas de visualização (`/events/{id}/row_admin`) dinamicamente.
