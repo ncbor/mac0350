@@ -46,7 +46,7 @@ Existem dois níveis de permissão no site:
 
 **2. Acesso de Grupo**
 Permite gerenciar apenas o conteúdo (eventos e perfil) do seu próprio grupo.
-- **Usuário**: Primeira palavra do nome do grupo em minúsculas (ex: `imesec`, `codelab`, `maratonusp`, etc).
+- **Usuário**: Nome do grupo em minúsculas (ex: `imesec`, `codelab`, `maratonusp`, etc).
 - **Senha**: Mesma do usuário.
 
 #### Funcionalidades sobre o Banco de Dados:
@@ -57,7 +57,7 @@ Permite gerenciar apenas o conteúdo (eventos e perfil) do seu próprio grupo.
 - **Editar Perfil do Grupo**: 
     - Atualizar a descrição, o site oficial, e a imagem de logo (via URL externa ou realizando upload de arquivos).
 
-#### OBSERVAÇÃO IMPORTANTE
+### OBSERVAÇÃO IMPORTANTE
 
 **O DIRETÓRIO NÃO ESTÁ SANITIZADO PARA VULNERABILIDADES DE SEGURANÇA**
 
