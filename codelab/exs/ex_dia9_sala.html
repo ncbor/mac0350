@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 9: Integração com HTMX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../styles.css">
+
+    <style>
+        summary::marker {
+            content: "";
+        }
+
+        summary::before {
+            content: "+";
+            font-weight: bold;
+            font-size: 2rem;
+            vertical-align: middle;
+        }
+
+        details[open] summary::before {
+            content: "-";
+        }
+
+        .spoiler-container {
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .spoiler-container input {
+            display: none;
+            /* Esconde o checkbox */
+        }
+
+        .spoiler-box {
+            background-color: #292827;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 4px;
+            position: relative;
+            min-width: 150px;
+            text-align: center;
+            transition: background-color 0.4s ease;
+        }
+
+        .hint-content {
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        .hint {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+
+
+        .spoiler-container input:checked~.spoiler-box .hint-content {
+            opacity: 1;
+        }
+
+        .spoiler-container input:checked~.spoiler-box .hint {
+            opacity: 0;
+        }
+
+        .spoiler-container input:checked~.spoiler-box {
+            background-color: #444;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .hint {
+                opacity: 0;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="container">
+
+    <div>
+
+        <h1>Aula 9: Integração de Front-end e Back-end com HTMX</h1>
+
+        <h3><a href="../index.html">Página inicial</a></h3>
+
+    </div>
+
+    <div>
+        <h2>Conteúdos</h2>
+
+        <ul>
+
+            <li><a href="#Introducao">Introdução</a></li>
+            <li><a href="#react">Frameworks de Front-end</a></li>
+            <ul>
+                <li><a href="#htmxReact">HTMX vs React</a></li>
+            </ul>
+            <li><a href="#BD">Interação com o banco de dados</a></li>
+            <ul>
+                <li><a href="#adicionando">Adicionando elementos no BD pelo front-end</a></li>
+                <li><a href="#delete">Deletando elementos do BD pelo front-end</a></li>
+                <li><a href="#put">Atualizando um elemento do BD pelo front-end</a></li>
+                <li><a href="#buscando">Buscando elementos do BD pelo front-end</a></li>
+            </ul>
+            <li><a href='#carregamento'>Carregamento</a></li>
+            <li><a href="#animacoes">Animações</a></li>
+            <li><a href="#exercicios">Exercícios</a></li>
+
+        </ul>
+
+    </div>
+
+    <div id="Introducao">
+
+        <h2>Introdução</h2>
+        <p>Na aula passada, começamos a explorar o <code>HTMX</code> demonstrando como transformar suas aplicações em
+            SPAs (Single Page Application). Nessa aula, faremos mais exemplos e mostraremos funcionalidades mais
+            avançadas dessa ferramenta. Também discutiremos o que são frameworks front-end (como o React) e explicaremos
+            um pouco de seu funcionamento.</p>
+
+    </div>
+
+    <div id="react">
+
+        <h2>Frameworks de Front-end</h2>
+
+        <p>De forma básica, frameworks de front-end diferem de frameworks de back-end pois são voltados para o cliente
+            ao invés do servidor. A principal funcionalidade desse tipo de framework é a atuaização da página com base
+            nas mudanças dos dados.</p>
+        <p>Um exemplo de sua funcionalidade client-side é o like das redes sociais. Em um framework de front-end, ao
+            clicar no like, instantanemente é atualizado o ícone do like sem que seja preciso acionar o back-end ou
+            atualizar toda a página.</p>
+        <p>Frameworks de back-end, como o, <code>FastAPI</code> ou <code>Django</code>, utilizam Server-Side Rendering,
+            ou seja, o servidor faz todo o processamento e envia o HTML completo para o browser. Já frameworks de
+            front-end utilizam Client-Side Rendering: O servidor envia apenas um pouco de HTML e muito JavaScript para
+            que o próprio browser possa construir a página a ser visualizada.</p>
+        <p>Alguns frameworks de front-end conhecidos são: <code>React</code>, <code>Angular</code>, <code>Vue</code>,
+            ...</p>
+        <p>Muitos dos benefícios e malefícios dos frameworks de front-end quando comparados aos de back-end se
+            assemelham a comparação de MPAs e SPAs. React e Angular são ótimos para criar SPAs, aplicações mais
+            dinâmicas e com mais interatividade com o usuário, enquanto FastAPI e Django são melhores para aplicações
+            que requerem muito processamento de dados.</p>
+        <p>Atualmente, é comum que aplicações web utilizem ambos os tipos de frameworks, aproveitando os pontos
+            positivos de cada um para que o produto final seja capaz de performar em situações mais gerais.</p>
+
+    </div>
+
+    <div id="htmxReact">
+
+        <h3>HTMX vs React</h3>
+
+        <p><code>HTMX</code> não é um framework de front-end, apenas uma biblioteca de JavaScript. A versão 1.0 do HTMX
+            foi lançada em 2020, então ainda é uma tecnologia nova que está se desenvolvendo mais a cada dia.</p>
+        <p>Nesse curso, optamos por ensinar HTMX ao invés de React, por exemplo, pois HTMX é notavelmente mais simples e
+            fácil de utilizar do que qualquer framework de front-end. Veja abaixo um exemplo de código de
+            <code>React</code>:</p>
+
+        <pre><code class="language-javascript">import React, { useState, useEffect } from 'react';
+
+const ExemploRequisicao = () => {
+  const [conteudo, setConteudo] = useState(null);
+  const [carregando, setCarregando] = useState(false);
+
+  const buscarDados = async (idPagina) => {
+    setCarregando(true);
+    try {
+      const response = await fetch(`https://localhost:8000/home/${idPagina}`);
+      const data = await response.json();
+      setConteudo(data);
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+      setConteudo({ title: "Erro", body: "Não foi possível carregar a página." });
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  useEffect(() => {
+    buscarDados('pagina1');
+  }, []);
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Meu Site&lt;/h1&gt;
+      &lt;div&gt;
+        &lt;button onClick={() => buscarDados('pagina1')}&gt;Página 1&lt;/button&gt;
+        &lt;button onClick={() => buscarDados('pagina2')}&gt;Página 2&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;hr/&gt;
+      
+      {carregando ? (
+        &lt;p>Carregando...&lt;/p&gt;
+      ) : conteudo ? (
+        &lt;div&gt;
+          &lt;h2&gt;{conteudo.title}&lt;/h2&gt;
+          &lt;p&gt;{conteudo.body}&lt;/p&gt;
+        &lt;/div&gt;
+      ) : (
+        &lt;p&gt;Nenhum conteúdo disponível.&lt;/p&gt;
+      )}
+    &lt;/div&gt;
+  );
+};
+
+export default ExemploRequisicao;</code></pre>
+
+        <p>O código acima é uma adaptação do exemplo das páginas da aula passada. Veja abaixo o código utilizando
+            <code>HTMX</code>:</p>
+
+        <pre><code class="language-html">&lt;DOCTYPE html&gt;
+&lt;html lang="pt-br"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Meu Site&lt;/title&gt;
+        &lt;style&gt;...&lt;/style&gt;
+        &lt;script src="HTMX"&gt;&lt;/script&gt; &lt;!-- Import do HTMX --&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Meu Site&lt;/h1&gt;
+        &lt;p&gt;Bem vindo ao meu site!&lt;/p&gt;
+        &lt;nav&gt;
+            &lt;button hx-get="/home/pagina1"
+                    hx-target="main"&gt;
+                Página 1
+            &lt;/button&gt;
+            &lt;button hx-get="/home/pagina2"
+                    hx-target="main"&gt;
+                Página 2
+            &lt;/button&gt;
+        &lt;/nav&gt;
+        &lt;hr&gt;
+        &lt;main&gt;
+            &lt;h2&gt;Pagina 1&lt;/h2&gt;
+            &lt;p&gt;Conteúdo da página 1&lt;/p&gt;
+        &lt;/main&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <p>O código com HTMX é mais simples de compreender e não contém nenhum JavaScript, apenas atributos no HTML. Não
+            é preciso definir funções, variáveis nem nada do tipo, basta inserir os tributos <code>hx</code> e sua
+            página se torna mais próxima de uma SPA. Dessa forma, julgamos que seria mais proveitoso ensinar
+            <code>HTMX</code> do que algum framework front-end.</p>
+
+    </div>
+
+    <div id="BD">
+
+        <h2>Interação com o banco de dados</h2>
+
+        <p>Mostraremos agora como o <code>HTMX</code> pode se comunicar com o banco de dados. Para isso, utilizaremos o
+            exemplo da busca dinâmica. Criaremos uma lista de alunos e buscaremos os alunos salvos no banco de dados por
+            nome.</p>
+        <p>Primeiramente devemos criar uma forma de adicionar alunos no banco de dados, e faremos isso utilizando
+            requests <code>HTMX</code>. Utilizaremos como base o mesmo app da aula passada, um cabeçalho com dois botões
+            para navegação de abas. Veja nosso código inicial.</p>
+
+        <pre><code class="language-python"># Arquivo Models.py
+
+from typing import Optional
+from sqlmodel import Field, SQLModel
+
+class Aluno(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome: str</code></pre>
+
+        <p>Nos nossos modelos, criamos o modelo <code>Aluno</code>, que contém um id e o nome.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;!DOCTYPE html>
+&lt;html lang="pt-br">
+    &lt;head>
+        &lt;meta charset="UTF-8">
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1.0">
+        &lt;script src="HTMX"&gt;&lt;/script&gt; &lt;!-- Import do HTMX --&gt;
+        &lt;title>Meu Site&lt;/title>
+        &lt;style>...&lt;/style>
+    &lt;/head>
+    &lt;body>
+        &lt;h1>Meu Site&lt;/h1>
+        &lt;p>Bem vindo ao meu site!&lt;/p>
+        &lt;button hx-get="/lista"
+                hx-target="main">
+                Lista de alunos
+        &lt;/button>
+        &lt;button hx-get="/editarAlunos"
+                hx-target="main">
+                Editar lista de alunos
+        &lt;/button>
+        &lt;hr>
+        &lt;main hx-get="/lista"
+              hx-target="main"
+              hx-trigger="load">
+        &lt;/main>
+    &lt;/body>
+&lt;/html></code></pre>
+
+        <p>No <code>index.html</code>, colocamos apenas nosso cabeçalho e os botões de navegação para as páginas com a
+            lista de alunos e a de editar as informações dos alunos.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo lista.html --&gt;
+
+&lt;input type="text" placeholder="Buscar...">
+&lt;div>
+    &lt;ul> 
+        {% for aluno in alunos %}
+            &lt;li>{{ aluno.id }} - {{ aluno.nome }}&lt;/li>
+        {% else %}
+            &lt;li>Não há alunos&lt;/li>
+        {% endfor %}
+    &lt;/ul>
+&lt;/div></code></pre>
+
+        <p>No <code>lista.html</code>, temos uma tag input (para escrever o nome do aluno que queremos buscar) que ainda
+            não funciona e um loop 'for' para listar todos os alunos.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo options.html --&gt;   
+    
+&lt;form>
+    &lt;input type="text" placeholder="Nome do Aluno" required>
+    &lt;button type="submit">Salvar&lt;/button>
+&lt;/form>
+&lt;br>
+&lt;div id="mensagem">&lt;/div></code></pre>
+
+        <p>Em <code>options.html</code>, colocamos um form (com input e o botão submit) que configuraremos para
+            adicionar um aluno no banco de dados. A div em baixo será utilizada para uma mensagem de retorno.</p>
+
+        <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from Models import Aluno
+from contextlib import asynccontextmanager
+from sqlmodel import SQLModel, create_engine, Session, select
+
+@asynccontextmanager
+async def initFunction(app: FastAPI):
+    create_db_and_tables()
+    yield
+
+app = FastAPI(lifespan=initFunction)
+
+arquivo_sqlite = "HTMX2.db"
+url_sqlite = f"sqlite:///{arquivo_sqlite}"
+
+engine = create_engine(url_sqlite)
+
+templates = Jinja2Templates(directory=["Templates", "Templates/Partials"])
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+ 
+def buscar_alunos():
+    with Session(engine) as session:
+        query = select(Aluno)
+        return session.exec(query).all()
+    
+@app.get("/busca", response_class=HTMLResponse)
+def busca(request: Request):
+    return templates.TemplateResponse(request, "index.html")
+
+@app.get("/lista", response_class=HTMLResponse)
+def lista(request: Request):
+    alunos = buscar_alunos()
+    return templates.TemplateResponse(request, "lista.html", {"alunos": alunos})
+    
+@app.get("/editarAlunos")
+def novoAluno(request: Request):
+    return templates.TemplateResponse(request, "options.html")</code></pre>
+
+        <p>Por fim, temos a <code>main.py</code>, que organiza os endpoints para os requests que queremos fazer.</p>
+        <p>Com esse código inicial, o <code>index.html</code> será renderizado ao acessarmos <code>/busca</code> e, a
+            partir dele, temos os botões de redirecionamento para a página da lista de alunos (que é renderizada por
+            automático em primeiro acesso) e para a página de edição de alunos.</p>
+
+        <h3 id="adicionando">Adicionando elementos no BD pelo front-end</h3>
+
+        <p>A partir do código acima, faremos modificações para que o botão 'Salvar' em <code>options.html</code> salve
+            um novo aluno no banco de dados com o nome declarado no input. Veja o código abaixo com as modificações
+            necessárias.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo options.html --&gt;
+
+&lt;form hx-post="/novoAluno"
+      hx-target="#mensagem"
+      hx-swap="beforeend">
+    &lt;input type="text" name="nome" placeholder="Nome do Aluno" required>
+    &lt;button type="submit">Salvar&lt;/button>
+&lt;/form>
+&lt;br>
+&lt;div id="mensagem">&lt;/div></code></pre>
+
+        <p>Note que adicionamos os atributos <code>hx-post</code> no form e <code>name</code> no input.</p>
+        <p>O <code>name="nome"</code> faz referência a uma variável 'nome' que estará na função que definiremos no
+            back-end. Ao fazer o request para o servidor, o <code>HTMX</code> enviará o que foi escrito no input dentro
+            do corpo do request com o identificador 'nome'. Precisaremos avisar ao <code>FastAPI</code> que a variável
+            'nome' que ele procura não está na url, e sim no corpo do request.</p>
+        <p>Note também a presença do <code>hx-swap</code>, o atributo que especifica como vamos fazer a atualização da
+            div alvo. Nesse caso, estamos utilizando o <code>beforeend</code>, que faz com que a resposta do servidor
+            seja colocada como último filho da div 'mensagem'. Isso faz com que novas mensagens de confirmação de ação
+            não sobrescrevam as antigas e tenhamos um "log" das nossas ações.</p>
+        <p>Contudo, ainda não temos o endpoit <code>/novoAluno</code> que é chamado pelo request post. Devemos criar
+            essa função:</p>
+
+        <pre><code class="language-python"># Arquivo main.py 
+
+@app.post("/novoAluno", response_class=HTMLResponse)
+def criar_aluno(nome: str = Form(...)):
+    with Session(engine) as session:
+        novo_aluno = Aluno(nome=nome)
+        session.add(novo_aluno)
+        session.commit()
+        session.refresh(novo_aluno)
+        return HTMLResponse(content=f"&lt;p>O(a) aluno(a) {novo_aluno.nome} foi registrado(a)!&lt;/p>")</code></pre>
+
+        <p>O <code>Form(...)</code> utilizado após o parâmetro da função é o que indica para o <code>FastAPI</code> onde
+            ele deve buscar pela variável 'nome', como comentamos acima.</p>
+        <p>Agora, ao digitar um nome e pressionar o botão 'Salvar', o aluno será adicionado ao banco de dados e passará
+            a ser renderiazdo na lista.</p>
+
+        <h3 id="delete">Deletando elementos do BD pelo front-end</h3>
+
+        <p>Para adicionar a opção de deletar um aluno do banco de dados, precisamos que seja informado o identificador
+            (id) do aluno desejado. Utilizar o nome para localizar o aluno que desejamos não é ideal, pois podem existir
+            estudantes com mesmo nome, mas os ids sempre serão distintos. Assim, podemos adicionar uma nova tag input em
+            <code>options.html</code></p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo options.html --&gt;
+
+&lt;form hx-delete="/deletaAluno"
+      hx-target="#mensagem"
+      hx-swap="beforeend"&gt;
+    &lt;input type="number" name="id" placeholder="ID do aluno" required&gt;
+    &lt;button type="submit"&gt;Deletar aluno&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <p>Com esse form, podemos especificar um id de um aluno para que ele seja removido do banco de dados, mas ainda
+            precisamos da função que fará a deleção do usuário. Veja o código dessa função abaixo</p>
+
+        <pre><code class="language-python"># Arquivo main.py 
+
+@app.delete("/deletaAluno", response_class=HTMLResponse)
+def deletar_aluno(id: int):
+    with Session(engine) as session:
+        query = select(Aluno).where(Aluno.id == id)
+        aluno = session.exec(query).first()
+        if (not aluno):
+            raise HTTPException(404, "Aluno não encontrado")
+        session.delete(aluno)
+        session.commit()
+        return HTMLResponse(content=f"&lt;p>O(a) aluno(a) {aluno.nome} foi deletado(a)!&lt;/p>")</code></pre>
+
+        <p>O <code>hx-delete</code> em específico passa as variáveis como querry parameters (no caso, o request feito
+            será <code>/deletaAluno?id=1</code>, por exemplo). Logo, não precisamos utilizar o <code>Form(...)</code>
+            como no request anterior, pois a variável será encontrada na URL.</p>
+        <p>Agora, nossa página tem um botão para deletar um Aluno do banco de dados.</p>
+
+        <h3 id="put">Atualizando um elemento do BD pelo front-end</h3>
+
+        <p>Para atualizar os dados de um aluno já existente, faremos um processo muito semelhante ao de deleção. Veja o
+            código necessário para fazer atualizações:</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo options.html --&gt;
+&lt;form hx-put="/atualizaAluno"
+      hx-target="#mensagem"
+      hx-swap="beforeend"&gt;
+    &lt;input type="number" name="id" placeholder="ID do aluno" required&gt;
+    &lt;input type="text" name="novoNome" placeholder="Novo nome do aluno" required&gt;
+    &lt;button type="submit"&gt;Atualizar aluno&lt;/button&gt;
+&lt;/form></code></pre>
+
+        <pre><code class="language-python"># Arquivo main.py 
+
+@app.put("/atualizaAluno", response_class=HTMLResponse)
+def atualizar_aluno(id: int = Form(...), novoNome: str = Form(...)):
+    with Session(engine) as session:
+        query = select(Aluno).where(Aluno.id == id)
+        aluno = session.exec(query).first()
+        if (not aluno):
+            raise HTTPException(404, "Aluno não encontrado")
+        nomeAntigo = aluno.nome
+        aluno.nome = novoNome
+        session.commit()
+        session.refresh(aluno)
+        return HTMLResponse(content=f"&lt;p>O(a) aluno(a) {nomeAntigo} foi atualizado(a) para {aluno.nome}!&lt;/p>")</code></pre>
+
+        <p>As únicas diferenças do código de atualização para o de deleção de Aluno são o tipo do request (para a
+            atualização estamos usando<code>PUT</code>) e que voltamos a utilizar o <code>Form(...)</code>, pois o
+            <code>hx-put</code> passa as variáveis pelo corpo do request.</p>
+
+        <h3 id="buscando">Buscando elementos do BD pelo front-end</h3>
+
+        <p>Por fim, temos controle sobre nosso banco de dados e populamos nossa lista de Alunos. Agora, podemos criar o
+            sistema que fará a busca por alunos na nossa lista.</p>
+        <p>Normalmente, criaríamos um novo endpoint para realizar essa busca, o que significa que teríamos que
+            fragmentar o arquivo <code>lista.html</code> em dois: Uma parte com o input e outra parte com a lista em si.
+            No entanto, o HTMX possuí o atributo <code>hx-select</code> que nos ajudará a resolver esse problema e nos
+            permitirá fazer essa busca apenas com o endpoint <code>/lista</code> já definido.</p>
+        <p>Veja abaixo o HTML modificado para que a busque funcione:</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo lista.html --&gt;
+
+&lt;input type="text"  
+       placeholder="Buscar..."
+       hx-get="/lista"
+       hx-target="#lista"
+       hx-trigger="input changed delay:500ms"
+       hx-select="#lista"
+       name="busca"&gt;
+&lt;div id="lista"&gt;
+    &lt;ul&gt;
+        {% for aluno in alunos %}
+            &lt;li&gt;{{ aluno.id }} {{ aluno.nome }}&lt;/li&gt;
+        {% else %}
+            &lt;li>Não há alunos&lt;/li&gt;
+        {% endfor %}
+    &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+
+        <p>Vamos analisar o que está sendo feito pelo <code>HTMX</code> no input:</p>
+
+        <ol>
+            <li>O <code>hx-get</code> faz um request para <code>/lista.</code></li>
+            <li>O <code>hx-target</code> indica que a resposta desse request deve ser inserida na div com id='lista'.
+            </li>
+            <li>O <code>hx-trigger</code> indica o que dispara o request. No caso, o request será feito toda vez que o
+                input mudar (<code>input changed</code>), ou seja, toda vez que for adicionada ou removida uma letra da
+                caixa de texto, sem precisar apertar o 'Enter'.</li>
+            <ul>
+                <li>O complemento <code>delay:500ms</code> faz com que o request seja apenas disparado 500ms após o
+                    término da digitação. Isso previne uma mudança "epilética" da lista e faz com que nossa busca atue
+                    como esperado.</li>
+            </ul>
+            <li>O <code>hx-select</code> muda a forma que o request é respondido. Ao invés de ser retornado todo o HTML
+                que viria no request <code>GET</code> de <code>/lista</code>, o <code>hx-select</code> indica que deve
+                apenas ser retornada a div cujo id é 'lista' no HTML obtido no request.</li>
+            <ul>
+                <li>Note que o <code>hx-select</code> não está fazendo referência à div com id 'lista' do próprio HTML,
+                    mas sim a div com id 'lista' que virá no request.</li>
+                <li>A presença desse atributo faz com que a caixa de texto(input) não seja substituída ao realizar um
+                    request.</li>
+            </ul>
+        </ol>
+
+        <p>Para terminar, precisamos apenas adapatar nossa função em python para que ela receba o argumento 'busca' e
+            faça a filtragem dos Alunos.</p>
+
+        <pre><code class="language-python"># Arquivo main.py
+
+def buscar_alunos(busca):
+    with Session(engine) as session:
+        query = select(Aluno).where(col(Aluno.nome).contains(busca)).order_by(Aluno.nome)
+        return session.exec(query).all()
+    
+@app.get("/lista", response_class=HTMLResponse)
+def lista(request: Request, busca: str | None=''):
+    alunos = buscar_alunos(busca)
+    return templates.TemplateResponse(request, "lista.html", {"alunos": alunos})</code></pre>
+
+        <p>Ainda temos duas observações importantes para fazer.</p>
+        <p>A primeira é que foi passado um <code>None=''</code> para a variável busca, pois o primeiro request de
+            <code>/lista</code> renderiza a página completa e não terá um parâmetro no input (filtraremos os alunos pela
+            string vazia, ou seja, serão retornados todos os alunos).</p>
+        <p>A segunda observação é que utilizamos o <code>.order_by(Aluno.nome)</code> na query. Por padrão, o objeto
+            retornado seria ordenado pelos ids dos alunos, mas preferimos que eles fossem ordenados por ordem
+            alfabética.</p>
+
+        <p>Finalmente, nossa busca pelos alunos da lista está totalmente funcional!</p>
+
+    </div>
+
+    <div id="carregamento">
+
+        <h2>Carregamento</h2>
+
+        <p>Para finalizar a aula, falaremos de algumas melhorias visuais possíveis para nossa página.</p>
+        <p>Existe no <code>HTMX</code> o atributo <code>hx-indicator</code>. Esse atributo serve para indicar ao usuário
+            que um processamento está ocorrendo no lado do servidor. Vamos adicionar esse atributo na nossa caixa de
+            busca:</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo lista.html --&gt;
+
+&lt;div>
+    &lt;input type="text" 
+        name="busca" 
+        placeholder="Buscar..."
+        hx-get="/lista"
+        hx-trigger="input changed delay:500ms"
+        hx-select="#lista"
+        hx-target="#lista"
+        hx-indicator="#indicator"&gt;
+
+    &lt;span id="indicator" class="htmx-indicator"&gt;Carregando...&lt;/span&gt;
+&lt;/div></code></pre>
+
+        <p>Veja que adicionamos uma tag 'span' com o texto "Carregando..." para servir como nosso indicador. Também
+            adicionamos a classe 'htmx-indicator' e um id para esse span. No <code>hx-indicator</code>, passamos o id do
+            elemento que servirá como nosso indicador de carregamento.</p>
+        <p>Agora, enquanto o banco de dados processa a informação, o texto "Carregando..." aparecerá ao lado da nossa
+            caixa de busca para indicar ao usuário que seu input está sendo processado.</p>
+        <p>O <code>hx-indicator</code> nos permite usar qualquer elemento html como indicador, basta passar o id e
+            colocar a classe 'htmx-indicator'. A opção mais popular é utilizar um svg de um círculo rotativo <img
+                src="../static/webmac/aula8-9/spinner.svg"
+                style="margin: 0px; box-shadow: none; background-color: white; height:0.9em; vertical-align: middle; display: inline;">
+            . Para fazer isso, precisamos carregar o svg na nossa aplicação.</p>
+        <p>No <code>FastAPI</code>, carregar mídias externas (como imagens) é um processo semelhante à criação de
+            templates. Primeiro, precisamos criar um diretório no mesmo endereço de <code>main.py</code>. Por convenção,
+            normalmente nomeamos esse diretório como "Static" ou "Media". Depois, precisamos importar esse diretório em
+            nosso back-end, e podemos fazer isso com o seguinte comando:</p>
+
+        <pre><code class="language-python"># Arquivo main.py 
+
+app.mount("/Static", StaticFiles(directory="static"), name="static")</code></pre>
+
+        <p>Isso nos permite referenciar o diretório "Static" dentro da nossa aplicação. Como estamos apenas fazendo uso
+            desse diretório dentro de um HTML, podemos simplesmente subistituir a linha do antigo indicador por:</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo lista.html --&gt;
+
+&lt;img id="indicator" class="htmx-indicator" src="/Static/spinner.svg" alt="Carregando..."/&gt;</code></pre>
+
+    </div>
+
+    <div id="animacoes">
+
+        <h2>Animações</h2>
+
+        <p>Animações servem puramente para apelo visual. Normalmente, elas são criadas utilizando <code>CSS</code> e
+            <code>JavaScript</code>, o que não nos afeta pois o <code>HTMX</code> possui integração com animações e
+            também pode ser utilizado normalamente. Como exemplo, criaremos um botão de apagar o nosso site.</p>
+        <p>Para desencadear nossa animação, vamos adicionar um novo botão na nav do nosso site:</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;button hx-delete="/apagar"
+        hx-target="body"
+        hx-confirm="Deseja deletar meu site?"
+        hx-swap="outerHTML swap:1s"
+        id="apagar"&gt;
+        Deletar site
+&lt;/button&gt;</code></pre>
+
+        <p>Esse botão subistituirá o <code>body</code> do nosso HTML com a informação retornada pelo request
+            <code>hx-delete</code> de <code>/apagar</code>, que será uma página HTML em branco. O <code>hx-swap</code>
+            indica que será trocado o 'outerHTML' da página e que essa troca demorará 1 segundo para se completar. Por
+            fim, o <code>hx-confirm</code> enviará uma mensagem para confirmação antes de efetuar o request, e já
+            veremos como isso pode ser utilizado.</p>
+        <p>Agora, precisamos construir a animação de fato usando <code>CSS</code>.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;style&gt;
+    .fade-out.htmx-swapping {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
+&lt;/style&gt;
+&lt;body class="fade-out"&gt;</code></pre>
+
+        <p>A animação em questão será um Fade-out, ou seja, colocaremos o HTML recebido pelo servidor "em baixo" do HTML
+            atual e modificaremos a opacidade do HTML atual para zero. O <code>transition</code> é uma das formas mais
+            comuns de se implementar animações em CSS, mas também é comum o uso de <code>animation</code> e os
+            <code>@keyframes</code>. No <code>transition</code> indicamos o que irá mudar, quanto tempo durará a
+            transição e a curva da animação.</p>
+        <p>Curvas de animação determinam a velocidade da animação. Para mais informações sobre as curvas de animação, a
+            página <a href="https://www.joshwcomeau.com/animation/css-transitions/" target="_blank">Josh Comeau</a> tem
+            demostrações visuais de como algumas curvas se comportam.</p>
+        <p>Mencionamos acima que precisamos de uma resposta vazia do servidor. Podemos facilmente implementar essa
+            função em nosso back-end.</p>
+
+        <pre><code class="language-python"># Arquivo main.py
+
+@app.delete("/apagar", response_class=HTMLResponse)
+def apagar():
+    return ""</code></pre>
+
+        <p>A última coisa que ainda precisamos fazer é estilizar a mensagem de confirmação. Por enquanto, o
+            <code>hx-confirm</code> apenas envia um alert para confirmarmos se realmente desejamos deltar o site, mas
+            está utilizando o alert padrão do navegador. Podemos utilizar a bibliteca <code>sweetalert</code> para
+            estilizar nossos alerts. Veja o script de estilização abaixo:</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;!-- Import da biblioteca que deve ser colocado na head --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">&lt;/script&gt;
+
+&lt;!-- Script de estilização que deve ser colocado no final do body --&gt;
+&lt;script&gt;
+    document.getElementById("apagar").addEventListener("htmx:confirm", (e) => {
+        e.preventDefault()
+        Swal.fire({
+            title: "Prosseguir?",
+            text: `${e.detail.question}`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Sim, deletar o site",
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "#d33"
+        }).then(result => {
+            if (result.isConfirmed) {
+                e.detail.issueRequest(true);
+            }
+        })
+    })
+&lt;/script&gt;</code></pre>
+
+        <p>Assim, fizemos a estilização do nosso botão de alert e nossa página está completa!</p>
+
+    </div>
+
+    <div id="exercicios">
+        <h2>Exercícios</h2>
+
+        <details class="note">
+            <summary>
+                <h3 style="display: inline; vertical-align: middle; margin: 0px;">
+                    Exercício em Sala
+            </summary>
+            </h3>
+            <br>
+            <p>A partir da página construída nessa aula, faça com que a visualização da lista de alunos seja paginada.
+            </p>
+            <p>Veja abaixo um vídeo mostrando como deve ser o funcionamento da paginação:</p>
+            <img src="../static/webmac/aula8-9/Paginação.gif">
+            <p>Neste exercício, não podem ser utilizadas bibliotecas como <code>fastapi-pagination</code>, é possível
+                resolver apenas com o conteúdo visto no curso.</p>
+
+            <hr>
+
+            <span>Dica:</span>
+            <label class="spoiler-container">
+                <input type="checkbox">
+                <div class="spoiler-box">
+                    <span class="hint">Revelar</span>
+                    <span class="hint-content">Tente usar query parameters no seu <code>hx-request</code></span>
+                </div>
+            </label>
+        </details>
+
+        <details class="note">
+            <summary>
+                <h3 style="display: inline; vertical-align: middle; margin: 0px;">
+                    Exercício para casa
+            </summary>
+            </h3>
+            <br>
+            <p>Essa semana não vamos passar exercícios para casa. Sua tarefa será finalizar seu projeto.</p>
+            <p>As especificações do projeto estão listadas <a href="#">aqui</a>.</p>
+        </details>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js" defer></script>
+
+</body>
+
+</html>

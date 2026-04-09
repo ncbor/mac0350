@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício de Sala - API de Alunos e Tarefas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css">
+
+    <style>
+        :root {
+            --background-color: #292827;
+            /* Nova cor de fundo */
+            --surface-color: #363636;
+            /* Um pouco mais claro que o fundo para contraste */
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #a0a0a0;
+            --disabled-text-color: #666;
+            --accent-color-1: #ff690a;
+            /* Laranja vibrante */
+            --accent-color-2: #ff690a;
+            /* Laranja vibrante */
+            --border-color: #444;
+            /* Borda mais escura */
+            --code-bg: #404040;
+            /* Fundo para blocos de código */
+            --note-bg: #4a4a4a;
+            /* Fundo para notas */
+            --note-border: var(--accent-color-2);
+            /* Borda da nota */
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.7;
+            background-color: var(--background-color);
+            color: var(--primary-text-color);
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 2rem 1.5rem;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--accent-color-1);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tip_box {
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--surface-color);
+            flex-direction: row;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            color: var(--accent-color-2);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.95em;
+            line-height: 1.4;
+            color: var(--primary-text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            color: #292827;
+            padding: 0;
+        }
+
+        .topLayer {
+            display: grid;
+            grid-template-columns: 10% 1fr;
+            gap: 10px;
+            padding-left: 25px;
+            align-items: center;
+            max-height: 200px;
+        }
+
+        .mini-icon {
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            max-height: 75px;
+            object-fit: scale-down;
+        }
+
+        .tip_box_title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color-1);
+        }
+
+        .tip_box_content {
+            padding: 1.5rem;
+            align-content: center;
+            background-color: var(--surface-color);
+            color: var(--primary-text-color);
+            border-left: 3px solid #2f7cf6;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .tip_box_end {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .question_box {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--accent-color-1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .question_title {
+            margin: 0 0 0.6rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent-color-1);
+        }
+
+        .question_box p {
+            margin: 0.4rem 0 0.7rem;
+        }
+
+        .question_box ul {
+            margin: 0;
+        }
+
+        a {
+            color: var(--accent-color-1);
+            transition: color 0.2s ease-in-out;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+
+            .topLayer {
+                grid-template-columns: 50px 1fr;
+                padding-left: 15px;
+            }
+
+            .mini-icon {
+                max-height: 40px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Exercício de Sala: API de Alunos e Tarefas</h1>
+
+    <div class="tip_box challenge">
+        <div class="topLayer">
+            <img class="mini-icon" src="../../static/webmac/aula6-7/icon-target.png" alt="Ícone de Desafio">
+            <p class="tip_box_title">Desafio da Aula</p>
+        </div>
+
+        <p class="tip_box_content">
+            Agora o foco será modelar dados relacionados com SQLModel e expor essas informações por meio de uma API.
+            Você irá criar um sistema simples de alunos e tarefas, com relacionamento entre as tabelas.
+        </p>
+
+        <div class="tip_box_end">
+            <p><strong>Tarefa:</strong></p>
+
+            <p>
+                Seu objetivo será implementar o modelo SQL, e a API para gerenciar alunos e suas tarefas.
+            </p>
+
+            <p>
+                Para te ajudar neste processo, ao final do enunciado, você encontrará um template para o seu arquivo de
+                modelos SQLModel,
+                e um outro template para sua API.
+            </p>
+
+            <p>Para executar os testes, você poderá utilizar o <code>docs</code> oferecido pelo próprio FastAPI</p>
+
+        </div>
+    </div>
+    <div class="question_box">
+        <p class="question_title">1. Modelagem com SQLModel</p>
+        <p>Estruture os modelos e o relacionamento no banco de dados</p>
+        <p>Você deverá modelar apenas 1 tabela, com os seguintes parâmetros:</p>
+        <ul>
+            <li>Tabela de alunos:
+                <ul>
+                    <li>nome</li>
+                    <li>idade</li>
+                    <li>Acesso direto as tarefas - Veja as Dicas para descobrir como fazer isso</li>
+                </ul>
+            </li>
+        </ul>
+        <p>Para facilitar, a propriedade do ID já foi implementada em uma tabela, e na outra, a tarefa já está
+            totalmente implementada, segue um template do código que você deverá completar:</p>
+        <pre><code class="language-python">from typing import List 
+# Este import será importante em algum lugar...
+# Dica: Olhe as outras dicas : D
+
+
+from sqlmodel import Field, Relationship, SQLModel
+
+
+class Aluno(SQLModel, table=True):
+    nusp: int | None = Field(default=None, primary_key=True)
+    # Implemente aqui os registros para o nome e idade do aluno.
+    
+    #Atente-se a como a tarefa referência os alunos.
+    # 
+    # É só uma tarefa, ou são várias tarefas? 
+    # Pelo modelo de Tarefa, devemos preparar algo a mais
+    # para que possamos pegar o aluno pela tarefa?
+    
+    # A dica está nos imports.
+
+
+class Tarefa(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    nome: str
+    duracao: int
+    aluno_nusp: int = Field(foreign_key="aluno.nusp")
+
+    aluno: Aluno = Relationship(back_populates="tarefas")
+    # Dica numero 2: 
+    # "tarefas" deve ser o nome do atributo 
+    # que representa a relação no modelo Aluno</code></pre>
+    </div>
+
+    <div class="question_box">
+        <p class="question_title">2. Implementação da API</p>
+        <p>Implemente as rotas necessárias para cadastrar e consultar os dados:</p>
+        <ul>
+            <li>POST:
+                <ul>
+                    <li>Adicionar alunos</li>
+                </ul>
+            </li>
+            <li>GET:
+                <ul>
+                    <li>Listar TODOS os alunos</li>
+                    <li>Listar TODAS as tarefas de um aluno em específico</li>
+                </ul>
+            </li>
+        </ul>
+        <p>
+            Para adiantar a configuração básica, use o template abaixo com a estrutura básica já feita, e algumas outras
+            funções que poderão ser usadas como referência:
+        </p>
+        <pre><code class="language-python">from fastapi import FastAPI
+from sqlmodel import Session, select, SQLModel, create_engine
+from models import Aluno, Tarefa
+
+arquivo_sqlite = "exercicio_7.db"
+url_sqlite = f"sqlite:///{arquivo_sqlite}"
+
+engine = create_engine(url_sqlite)
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+app = FastAPI()
+
+
+@app.on_event("startup")
+def on_startup() -> None:
+    create_db_and_tables()
+
+@app.post("/alunos")
+def criar_aluno(aluno: Aluno):
+    with Session(engine) as session:
+        # Implemente aqui os comandos para adicionar, salvar e depois
+        # como resposta da API:
+        # retorne o objeto aluno da forma em que ele foi salvo no banco de dados.
+
+
+@app.post("/tarefas")
+def criar_tarefa(tarefa: Tarefa):
+    with Session(engine) as session:
+        session.add(tarefa)
+        session.commit()
+        session.refresh(tarefa)
+        return tarefa
+
+
+@app.get("/alunos")
+def listar_alunos():
+    with Session(engine) as session:
+        # Implemente aqui o comando para retornar: 
+        # A lista de TODOS os alunos 
+        # cadastrados no banco de dados.
+
+
+@app.get("/tarefas")
+def listar_tarefas():
+    with Session(engine) as session:
+        return session.exec(select(Tarefa)).all()
+
+@app.get("/alunos/{aluno_nusp}/tarefas")
+def listar_tarefas_do_aluno(aluno_nusp: int):
+    with Session(engine) as session:
+        # Implemente aqui os comandos para retornar: 
+        # A lista de tarefas associadas a um aluno.
+
+        # você pode fazer esta consulta tanto
+        # através da estruturação de uma consulta normal SQL,
+        # quanto simplesmente pegando o Aluno
+        # e retornando a propriedade implementada anteriormente.</code></pre>
+    </div>
+
+    <p>
+        Entregue um arquivo para os modelos e o arquivo da API utilizando destes modelos.
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js" defer></script>
+
+</body>
+
+</html>

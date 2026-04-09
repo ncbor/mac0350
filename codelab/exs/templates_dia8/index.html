@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exercício Dia 8</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.js"></script>
+    <style>
+        .active { color: orange; font-weight: bold; }
+        nav button { margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body hx-get="/aba/likes" hx-trigger="keyup[shiftKey&&altKey&&(key=='p'||key=='P')] from:body" hx-target="#conteudo">
+    <h1>Meu Site HTMX</h1>
+    <nav hx-target="#conteudo" hx-push-url="false">
+        <button hx-get="/aba/likes" onclick="selecionar(this)" class="active">Curtidas</button>
+        <button hx-get="/aba/jupiter" onclick="selecionar(this)">Júpiter</button>
+        <button hx-get="/aba/professor" onclick="selecionar(this)">Professor</button>
+    </nav>
+    <hr>
+    <main id="conteudo" hx-get="/aba/likes" hx-trigger="load"></main>
+
+    <script>
+        function selecionar(btn) {
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        
+        let abas = ["likes", "jupiter", "professor"];
+        let atual = 0;
+        document.body.addEventListener('keyup', (e) => {
+            if (e.shiftKey && e.altKey && (e.key === 'p' || e.key === 'P')) {
+                atual = (atual + 1) % abas.size; // This is a bit JS-ish, but the prompt says child learning JS...
+                // Wait, it's better to just use hx-trigger on the body as I did above.
+            }
+        });
+    </script>
+</body>
+</html>

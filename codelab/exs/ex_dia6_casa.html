@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercícios de Casa - Introdução ao SQL</title>
+    <style>
+        :root {
+            --background-color: #292827;
+            --surface-color: #363636;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #a0a0a0;
+            --accent-color-1: #ff690a;
+            --accent-color-2: #ff690a;
+            --border-color: #444;
+            --code-bg: #404040;
+        }
+
+        a {
+            color: var(--accent-color-1);
+            transition: color 0.2s ease-in-out;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.7;
+            background-color: var(--background-color);
+            color: var(--primary-text-color);
+            margin: 0;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--accent-color-1);
+            font-weight: 700;
+        }
+
+        h1 {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .exercise-box {
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--surface-color);
+        }
+
+        .topLayer {
+            gap: 10px;
+            padding: none;
+            padding-left: 25px;
+            margin: none;
+            align-items: center;
+            max-height: 200px;
+        }
+
+        .mini-icon {
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            max-height: 75px;
+            object-fit: scale-down;
+        }
+
+        .exercise-box>p:first-of-type {
+            padding: 1.5rem;
+            background-color: var(--surface-color);
+            color: var(--primary-text-color);
+            border-left: 5px solid var(--accent-color-1);
+            margin: 0;
+        }
+
+        .exercise-box>p:last-of-type {
+            padding-left: 1.5rem;
+        }
+
+        .exercise-box ul {
+            padding: 0 1.5rem 1.5rem 2.5rem;
+            background-color: var(--surface-color);
+            margin: 0;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            color: var(--accent-color-2);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        button {
+            background-color: var(--code-bg);
+            color: var(--accent-color-1);
+            border: 1px solid var(--accent-color-1);
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--accent-color-1);
+            color: #fff;
+        }
+
+        .output-text {
+            display: inline-block;
+            margin-left: 15px;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Exercícios de Casa: Introdução ao SQL</h1>
+        <p>
+            Continuando a trabalhar nas funcionalidades do seu projeto, para esta parte, faremos algo similar
+            ao que foi feito nos exercícios de sala, mas dando enfase nas necessidades do seu projeto.
+        </p>
+
+        <p>
+            Os exercícios foram pensados para servir como guia durante a criação do seu banco de dados.
+        </p>
+        <p>
+            Apenas o produto do item <a href="#schema-question">3. Criação do Schema</a> deverá estar presente em seu
+            repositório para avaliação.
+        </p>
+
+        <div class="exercise-box">
+            <div class="topLayer">
+                <h3 class="tip_box_title">1. Definição dos Dados Trabalhados</h3>
+            </div>
+            <p>
+                <strong>Defina:</strong> Quais serão as informações que sua aplicação irá manipular?
+            </p>
+            <p>Você consegue dizer se existe algum tipo de dado que poderia ser agrupado?</p>
+        </div>
+
+        <div class="exercise-box">
+            <div class="topLayer">
+                <h3 class="tip_box_title">2. Modelagem do Banco de Dados</h3>
+            </div>
+            <p>
+                <strong>Defina:</strong> Caso haja algum tipo de dado agrupado, existe algum tipo de relação entre estes
+                grupos?
+            </p>
+            <p>Caso haja relação, você consegue dizer quem está relacionado a quem? <br>
+                Isto é: dizer quem é <code>chave primária</code> e quem é <code>chave estrangeira</code>?</p>
+        </div>
+
+        <div id="schema-question" class="exercise-box">
+            <div class="topLayer">
+                <h3 class="tip_box_title">3. Criação do Schema</h3>
+            </div>
+            <p>
+                <strong>Tarefa:</strong> Crie o script SQL para criar todas as tabelas necessárias para seu banco de
+                dados, incluindo as chaves primárias e estrangeiras apropriadas.
+            </p>
+            <p>
+                A partir deste script, utilize uma ferramenta de criação de diagramas, para gerar uma representação de
+                seu modelo.
+                <br><strong>Sugestão:</strong> cole seu script em <a
+                    href="https://www.drawdb.app/">https://www.drawdb.app/</a>, e salve em seu repositório, o diagrama
+                gerado.
+                <br>Você é livre para modificar e personalizar o diagrama como quiser, não há formato definido.
+
+                <br>Este diagrama poderá ser especialmente útil em seu Pitch.
+            </p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 8: Introdução ao HTMX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../styles.css">
+
+    <style>
+        summary::marker {
+            content: "";
+        }
+
+        summary::before {
+            content: "+";
+            font-weight: bold;
+            font-size: 2rem;
+            vertical-align: middle;
+        }
+
+        details[open] summary::before {
+            content: "-";
+        }
+
+        .spoiler-container {
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .spoiler-container input {
+            display: none;
+            /* Esconde o checkbox */
+        }
+
+        .spoiler-box {
+            background-color: #292827;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 4px;
+            position: relative;
+            min-width: 150px;
+            text-align: center;
+            transition: background-color 0.4s ease;
+        }
+
+        .hint-content {
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        .hint {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+
+
+        .spoiler-container input:checked~.spoiler-box .hint-content {
+            opacity: 1;
+        }
+
+        .spoiler-container input:checked~.spoiler-box .hint {
+            opacity: 0;
+        }
+
+        .spoiler-container input:checked~.spoiler-box {
+            background-color: #444;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .hint {
+                opacity: 0;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="container">
+
+    <div>
+
+        <h1>Aula 8: Introdução ao HTMX</h1>
+
+        <h3><a href="../index.html">Página inicial</a></h3>
+
+    </div>
+
+    <div>
+        <h2>Conteúdos</h2>
+
+        <ul>
+
+            <li><a href="#Introducao">Introdução</a></li>
+            <li><a href="#crud">CRUD</a></li>
+            <li><a href="#rest">REST</a></li>
+            <li><a href="#spa">MPA e SPA</a></li>
+            <li><a href="#ajax">AJAX</a></li>
+            <li><a href="#htmx">HTMX</a></li>
+            <ul>
+                <li><a href="#request">Request HTMX</a></li>
+                <li><a href="#urls">URLs</a></li>
+                <li><a href="#atalhos">Atalhos</a></li>
+            </ul>
+            <li><a href="#exercicios">Exercícios</a></li>
+
+        </ul>
+
+    </div>
+
+    <div id="Introducao">
+        <h2>Introdução</h2>
+        <p>Até agora, discutimos como construir páginas web simples usando HTML, CSS e JavaScript. Também começamos a
+            usar <code>FastAPI</code> para criar aplicações web, e aprendemos a utilizar bancos de dados para armazenar
+            informações em nossos sites.</p>
+        <p>Hoje, discutiremos conceitos de arquitetura de software e <code>HTMX</code> com alguns exemplos práticos.</p>
+    </div>
+
+    <div id="crud">
+        <h2>CRUD</h2>
+        <p>CRUD é um acrônimo que representa as operações básicas de um banco de dados (<code>Create</code>,
+            <code>Read</code>, <code>Update</code>, <code>Delete</code>). Em uma API, como o FastAPI, essas operações
+            costumam estar embutidas dentro de outras funções da própria API, mas sempre estão presentes em todo banco
+            de dados relacional. Em HTTP, as operações CRUD são traduzidas em Create = <code>POST</code>, Read =
+            <code>GET</code>, Update = <code>PUT</code> e Delete = <code>DELETE</code>.</p>
+    </div>
+
+    <div id="rest">
+        <h2>REST</h2>
+        <p>REST (Representational State Transfer) é um estilo de arquitetura de software para APIs que facilita a
+            comunicação entre sistemas web. O conceito fundamental do REST, que faz com que ele se destaque, é a
+            Interface Uniforme, que possui quatro características principais:</p>
+        <ol>
+            <li>Identificação de recursos</li>
+            <li>Manipulação de recursos por representação</li>
+            <li>Mensagens auto-descritivas</li>
+            <li>HATEOAS (Hypermedia as the engine of application state)</li>
+        </ol>
+        <p>Para explicar esses conceitos, considere o trecho de HTML abaixo:</p>
+
+        <pre><code class="language-html">&lt;body&gt;
+    &lt;section&gt;
+        &lt;p&gt;
+        Name: Fulano
+        &lt;/p&gt;
+        &lt;p&gt;
+        Email: fulano@usp.br
+        &lt;/p&gt;
+        &lt;p&gt;
+            &lt;a href="/contatos/37/editar"&gt;Editar Contato&lt;/a&gt;
+            &lt;a href="/contatos/37/email"&gt;Acessar Email&lt;/a&gt;
+            &lt;a href="/contatos/37/arquivo"&gt;Arquivar&lt;/a&gt;
+        &lt;/p&gt;
+    &lt;/section&gt;
+&lt;/body&gt;</code></pre>
+
+        <p>Suponha que este HTML é retornado pelo servidor ao acessar <code>www.exemplo.com/contatos/37</code>.</p>
+
+        <p>Vamos passar por cada característica e analisar o código acima:</p>
+
+        <ol>
+            <li><code>Identificação de recursos</code>: O primeiro aspecto do REST é a idéia de que recursos (nesse
+                caso, o contato) podem ser encontrados na URL (Universal Resource Locator). Note também que o HTML,
+                retornado pelo servidor ao acessar a URL, contém links em tags <code>&lt;a&gt;</code> que indicam as
+                operações que são aplicáveis ao nosso recurso (contato 37) e elas seguem o padrão convencional de
+                hierarquia das URLs.</li>
+            <li><code>Manipulação de recursos por representação</code>: Isso apenas significa que é possível alterar
+                nosso recurso por meio de representações (como páginas HTML) ao invés de precisar fazer consultas SQL,
+                por exemplo.</li>
+            <li><code>Mensagens auto-descritivas</code>: Mesmo com o cliente (browser) não tendo nenhuma informação
+                sobre o funcionamento da API ou o banco de dados, ele tem todas as informações sobre quais ações estão
+                disponíveis para esse recurso e como renderizá-las.</li>
+            <li><code>HATEOAS</code>: Este último conceito se encaixa perfeitamente com o anterior: os clientes
+                transitam entre os estados da aplicação interagindo com URLs encontradas no próprio hipertexto (por meio
+                de formulários e links). Assim, no exemplo de HTML acima, a capacidade de editar, enviar por e-mail e
+                arquivar o contato está codificada como âncoras no HTML. Se uma dessas ações não estivesse disponível,
+                ou se uma nova se tornasse disponível, ela apareceria em um novo trecho de HTML após a atualização da
+                página. Isso contrasta com uma abordagem de cliente robusto, onde, por exemplo, um armazenamento local
+                pode ser sincronizado de forma assíncrona com um servidor back-end e, portanto, o HTML não atua como o
+                mecanismo do estado do aplicativo, mas sim como uma linguagem de descrição de interface do usuário (um
+                tanto instável).</li>
+        </ol>
+
+        <p>Atualmente, a arquitetura REST é muitas vezes referenciada erroneamente. É comum a associação de REST com
+            APIs de JSON, duas coisas que não são iguais. Até mesmo pois JSON não é totalmente auto-descritivo, por
+            exemplo.</p>
+        <p>Leia mais sobre essa confusão nesse <a
+                href="https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/">artigo</a> da própria ORG
+            HTMX.</p>
+    </div>
+
+    <div id="spa">
+        <h2>MPA e SPA</h2>
+        <p>Anteriormente, se quiséssemos um site com múltiplas páginas, faríamos isso usando rotas diferentes em nossa
+            aplicação. Agora, temos a capacidade de carregar apenas uma única página e então usar JavaScript para
+            manipular a <code>DOM</code>. Uma grande vantagem disso é que só precisamos modificar a parte da página que
+            está realmente mudando. Por exemplo, se temos uma Barra de Navegação que não muda de uma página para outra,
+            não gostaríamos de ter que renderizar novamente essa navbar toda vez que mudamos para uma nova página.</p>
+        <p>Essa é a diferença de uma SPA (Single Page Application) para uma MPA (Multi-Page Application): MPAs
+            recarregam toda a página no redirecionamento, enquanto SPAs apenas atualizam o conteúdo da página atual.
+            Ambas as estratégias possuem suas vantagens e desvantagens.</p>
+        <p>Exemplos de MPAs são a Wikipedia, Amazon, ...<br>
+            Exemplos de SPAs são o Gmail, Instagram, Netflix, ...</p>
+        <p>As SPAs costumam ter carregamento mais rápido, são mais simples de desenvolver (dado que o código de
+            front-end é reutilizado múltiplas vezes) e facilitam a implementação de interações com o usuário como
+            animações e atualizações em tempo real da página. Por outro lado, utilizam mais memória e possuem um
+            carregamento inicial mais longo.</p>
+        <p>Já as MPAs não possuem uma dependência em JavaScript como as SPAs, também são mais adequadas para aplicações
+            grandes, com conteúdo diversificado e/ou muito processamento de dados, mas são mais lentas e exigem mais
+            manutenção de código do que as SPAs.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: center; font-size: 1.5em;">MPA</th>
+                    <th style="text-align: center; font-size: 1.5em;">SPA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="../static/webmac/aula8-9/MPA.png" style="width: 50vmax; box-shadow: none;"></td>
+                    <td><img src="../static/webmac/aula8-9/SPA.png" style="width: 50vmax; box-shadow: none;"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="ajax">
+        <h2>AJAX</h2>
+        <p>Requests AJAX (Asynchronous JavaScript and XML) permitem que páginas web se comuniquem com o servidor de
+            forma assíncrona, ou seja, sem recarregar a página inteira. Isso melhora a experiência do usuário, pois
+            permite que apenas partes específicas da página sejam atualizadas. AJAX se refere a uma técnica e não uma
+            tecnologia ou ferramenta específica, por isso existem várias formas de realizar esse tipo de request e
+            atualizar o conteúdo da página.</p>
+    </div>
+
+    <div id="htmx">
+        <h2>HTMX</h2>
+        <p>HTMX é uma biblioteca de JavaScript que permite acessar recursos modernos dos navegadores diretamente do
+            HTML, em vez de escrever seu próprio JavaScript.</p>
+        <p>Para entender o HTMX, vamos dar uma olhada em uma tag âncora:</p>
+
+        <pre><code class="language-html">&lt;a href="/blog"&gt;Blog&lt;/a&gt;</code></pre>
+
+        <p>Esta tag âncora diz ao navegador:</p>
+        <p class="note">"Quando um usuário clicar neste link, faça uma requisição HTTP GET para '/blog' e carregue o
+            conteúdo da resposta na janela do navegador".</p>
+        <p>Com isso em mente, considere o seguinte trecho de HTML com HTMX:</p>
+        <pre><code class="language-html">&lt;button hx-post="/clicked"
+        hx-trigger="click"
+        hx-target="#parent-div"
+        hx-swap="outerHTML"&gt;
+        Clique Aqui!
+&lt;/button&gt;</code></pre>
+        <p>Isso diz ao HTMX:</p>
+        <p class="note">"Quando um usuário clicar neste botão, faça uma requisição <code>HTTP POST</code> para
+            <code>/clicked</code> e use o conteúdo da resposta para substituir o <code>outerHTML</code> do elemento com
+            o id <code>#parent-div</code> na DOM"</p>
+        <p>O HTMX estende e generaliza a ideia central do HTML como hipertexto, abrindo muitas possibilidades
+            diretamente na linguagem:</p>
+        <ul>
+            <li>Agora qualquer elemento, não apenas âncoras e formulários, pode fazer requisições HTTP</li>
+            <li>Agora qualquer evento, não apenas cliques ou envios de formulários, pode acionar requisições</li>
+            <li>Agora qualquer verbo HTTP, não apenas <code>GET</code> e <code>POST</code>, pode ser usado</li>
+            <li>Agora qualquer elemento, não apenas a janela inteira, pode ser o alvo para atualização pela requisição
+            </li>
+        </ul>
+        <p>Observe que quando você está usando HTMX, no lado do servidor você normalmente responde com HTML, não com
+            JSON.</p>
+    </div>
+
+    <div id="request">
+
+        <h3>Request HTMX</h3>
+
+        <p> Para utilizar o HTMX, devemos incluir a seguinte linha no head do nosso HTML:</p>
+
+        <pre><code class="language-html">&lt;script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.js" integrity="sha384-ezjq8118wdwdRMj+nX4bevEi+cDLTbhLAeFF688VK8tPDGeLUe0WoY2MZtSla72F" crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
+
+        <p>Vamos começar com um exemplo simples, entendendo como usar <code>HTMX</code> para atualizar o conteúdo da
+            tela de forma dinâmica. No exemplo abaixo temos um template do FastAPI mostrando uma página inicial
+            <code>/home</code> que possui botões de redirecionamento:</p>
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;DOCTYPE html&gt;
+&lt;html lang="pt-br"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Meu Site&lt;/title&gt;
+        &lt;style&gt;...&lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Meu Site&lt;/h1&gt;
+        &lt;p&gt;Bem vindo ao meu site!&lt;/p&gt;
+        &lt;nav&gt;
+            &lt;a href="/home/pagina1"&gt;&lt;button&gt;Pagina 1&lt;/button&gt;&lt;/a&gt;
+            &lt;a href="/home/pagina2"&gt;&lt;button&gt;Pagina 2&lt;/button&gt;&lt;/a&gt;
+        &lt;/nav&gt;
+        &lt;hr&gt;
+        {% block main %}
+            &lt;h2&gt;Pagina 1&lt;/h2&gt;
+            &lt;p&gt;Conteúdo da página 1&lt;/p&gt;
+        {% endblock main %}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <pre><code class="language-html">&lt;!-- Arquivo Pagina1.html --&gt;
+
+{% extends "index.html" %}
+{% block main %}
+    &lt;h2&gt;Pagina 1&lt;/h2&gt;
+    &lt;p&gt;Conteúdo da página 1&lt;/p&gt;
+{% endblock main %}</code></pre>
+
+        <pre><code class="language-html">&lt;!-- Arquivo Pagina2.html --&gt;
+
+{% extends "index.html" %}
+{% block main %}
+    &lt;h2&gt;Pagina 2&lt;/h2&gt;
+    &lt;p&gt;Conteúdo da página 2&lt;/p&gt;
+{% endblock main %}</code></pre>
+
+        <p>Por mais que pareça, o código acima não é uma SPA pois o FastAPI concatena os arquivos html quando realiza o
+            request <code>/home/pagina1</code>, por exemplo. Logo, o HTML retornado pelo request de uma dessas páginas
+            será o HTML completo da página.</p>
+        <p>Assim, pensávamos na navegação entre páginas dentro da lógica de uma MPA (Multi Page Application), em
+            adicionar anchor tags com links que recarregam a tela e nos levam para uma outra página a partir de uma
+            resposta do servidor contendo um arquivo HTML completo. Com HTMX, entretanto, podemos ser mais eficientes e
+            trocar somente as partes que nos interessam.</p>
+        <p>Vamos adaptar o exemplo acima para que ele utilize <code>HTMX</code> e se comporte mais como uma SPA.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;DOCTYPE html&gt;
+&lt;html lang="pt-br"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Meu Site&lt;/title&gt;
+        &lt;style&gt;...&lt;/style&gt;
+        &lt;script src="HTMX"&gt;&lt;/script&gt; &lt;!-- Import do HTMX --&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Meu Site&lt;/h1&gt;
+        &lt;p&gt;Bem vindo ao meu site!&lt;/p&gt;
+        &lt;nav&gt;
+            &lt;button hx-get="/home/pagina1"
+                    hx-target="main"&gt;
+                Página 1
+            &lt;/button&gt;
+            &lt;button hx-get="/home/pagina2"
+                    hx-target="main"&gt;
+                Página 2
+            &lt;/button&gt;
+        &lt;/nav&gt;
+        &lt;hr&gt;
+        &lt;main&gt;
+            &lt;h2&gt;Pagina 1&lt;/h2&gt;
+            &lt;p&gt;Conteúdo da página 1&lt;/p&gt;
+        &lt;/main&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <pre><code class="language-html">&lt;!-- Arquivo Pagina1.html --&gt;
+
+&lt;h2&gt;Pagina 1&lt;/h2&gt;
+&lt;p&gt;Conteúdo da página 1&lt;/p&gt;</code></pre>
+
+        <pre><code class="language-html">&lt;!-- Arquivo Pagina2.html --&gt;
+
+&lt;h2&gt;Pagina 2&lt;/h2&gt;
+&lt;p&gt;Conteúdo da página 2&lt;/p&gt;</code></pre>
+
+        <p>Perceba que mudamos algumas coisas: importamos o HTMX dentro da head e encapsulamos o conteúdo da página
+            dentro de uma tag 'main', ao invés de utilizar os blocos da linguagem de template. O atributo
+            <code>hx-target</code> utiliza esse encapsulamento para trocar o conteúdo que está no local indicado, no
+            caso, a tag 'main'. Além disso, não especificamos o <code>hx-swap</code> que nos diz como a resposta do
+            servidor vai substituir nosso alvo, isso porque o hx-swap padrão é o 'innerHTML'.</p>
+        <p>Após essas alterações, a resposta para o request feito por <code>hx-get="/home/pagina2"</code> será apenas
+        </p>
+
+        <pre><code class="language-html">&lt;h2&gt;Página 2&lt;/h2&gt;
+&lt;p&gt;Conteúdo da página 2&lt;/p&gt;</code></pre>
+
+        <p>Essa resposta subistituirá o conteúdo 'innerHTML' da tag 'main' e a página 2 passará a ser renderizada.</p>
+        <p>O mesmo vale para o botão para fazer o request da página 1: Quando o botão for pressionado, apenas o html de
+            'Pagina1.html' será retornado.</p>
+        <p>Agora que temos todo o código modularizado, podemos até mesmo omitir o conteúdo da página 1 no nosso
+            'index.html'. No entanto, ao recarregar a página inicial, o conteúdo da página 1 não estará mais renderizado
+            pois o retiramos do HTML base. Uma forma possível de resolver esse problema é solicitar a página 1 no
+            momento que a página inicial for carregada, e podemos fazer isso com o atributo
+            <code>hx-trigger="load"    </code>.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+   
+&lt;DOCTYPE html&gt;
+&lt;html lang="pt-br"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Meu Site&lt;/title&gt;
+        &lt;style&gt;...&lt;/style&gt;
+        &lt;script src="HTMX"&gt;&lt;/script&gt; &lt;!-- Import do HTMX --&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Meu Site&lt;/h1&gt;
+        &lt;p&gt;Bem vindo ao meu site!&lt;/p&gt;
+        &lt;nav&gt;
+            &lt;button hx-get="/home/pagina1"
+                    hx-target="main"&gt;
+                Página 1
+            &lt;/button&gt;
+            &lt;button hx-get="/home/pagina2"
+                    hx-target="main"&gt;
+                Página 2
+            &lt;/button&gt;
+        &lt;/nav&gt;
+        &lt;hr&gt;
+        &lt;main hx-get="/home/pagina1"
+              hx-target="main"
+              hx-trigger="load"&gt;
+        &lt;/main&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>Agora, ao acessar <code>/home</code>, a página automaticamente fará o request de <code>/home/pagina1</code> e
+            renderizará o conteúdo da página 1 sem que tenhamos que fazer o request pelo botão.</p>
+
+    </div>
+
+    <div id="urls">
+        <h3>URLs</h3>
+
+        <p>Continuando a analisar nosso exemplo anterior, temos que agora nossa aplicação funciona como uma SPA.</p>
+        <p>Note que a URL da nossa aplicação não muda, ou seja, ela permanece como <code>/home</code> independente da
+            página que está sendo visualizada. Embora esse seja um comportamento comum de um aplicação SPA, talvez seja
+            desejável utilizar a URL para visualizar a página 2 diretamente, sem precisar passar pela página 1.</p>
+        <p>Para resolver esse problema, precisamos primeiramente ajustar nossa aplicação para que as visualizações das
+            páginas estejam vinculadas a URL. O HTMX possui o atributo <code>hx-push-url</code> que atualiza a URL atual
+            com a URL do request feito. Assim, podemos adicionar esse atributo aos nossos requests no 'index.html'.</p>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;DOCTYPE html&gt;
+&lt;html lang="pt-br"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Meu Site&lt;/title&gt;
+        &lt;style&gt;...&lt;/style&gt;
+        &lt;script src="HTMX"&gt;&lt;/script&gt; &lt;!-- Import do HTMX --&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Meu Site&lt;/h1&gt;
+        &lt;p&gt;Bem vindo ao meu site!&lt;/p&gt;
+        &lt;nav&gt;
+            &lt;button hx-get="/home/pagina1"
+                    hx-target="main"
+                    hx-push-url="true"&gt;
+                Página 1
+            &lt;/button&gt;
+            &lt;button hx-get="/home/pagina2"
+                    hx-target="main"
+                    hx-push-url="true"&gt;
+                Página 2
+            &lt;/button&gt;
+        &lt;/nav&gt;
+        &lt;hr&gt;
+        &lt;main hx-get="/home/pagina1"
+              hx-target="main"
+              hx-trigger="load"
+              hx-push-url="true"&gt;
+        &lt;/main&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <p>Por padrão, o <code>hx-push-url</code> possui o valor falso, mas podemos atualizá-lo atribuindo o valor
+            'true'.</p>
+        <p>Agora, toda vez que atualizarmos a página que está sendo visualizada, a URL também será atualizada para
+            <code>/home/paginaX</code>, com X o número da página.</p>
+        <p>Mesmo com essa modificação, ainda não é póssível acessar a página 2 diretamente pela URL. Note que se
+            acessarmos <code>/home/pagina1</code> apenas o conteúdo da página 1 será renderizado, sem o cabeçalho do
+            site, e o mesmo vale para <code>/home/pagina2</code>.</p>
+        <p>Para resolver esse problema, teremos que atualizar nossa <code>main.py</code>. Considere o código abaixo como
+            sendo a <code>main.py</code> atual.</p>
+
+        <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+app = FastAPI()
+
+templates = Jinja2Templates(directory=["Templates", "Templates/Partials"])
+
+@app.get("/home",response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse(request, "index.html")
+
+@app.get("/home/pagina1", response_class=HTMLResponse)
+async def pag1(request: Request):
+    return templates.TemplateResponse(request, "Pagina1.html")
+
+@app.get("/home/pagina2", response_class=HTMLResponse)
+async def pag2(request: Request):
+    return templates.TemplateResponse(request, "Pagina2.html")</code></pre>
+
+        <p>É possível realizar uma verificação sobre o tipo de request que está sendo feito, e isso nos possibilita
+            separar requests HTMX dos demais. Dessa forma, quando detectarmos que o request para o conteúdo das páginas
+            não é HTMX (foi um request feito diretamente pela URL), podemos pedir para que seja renderizada a página
+            completa.</p>
+        <p>Observe o código abaixo que contém essa verificação para ambas as páginas.</p>
+
+        <pre><code class="language-python"># Arquivo main.py
+
+@app.get("/home/pagina1", response_class=HTMLResponse)
+async def pag1(request: Request):
+    if (not "HX-Request" in request.headers):
+        return templates.TemplateResponse(request, "index.html")
+    return templates.TemplateResponse(request, "Pagina1.html")
+
+@app.get("/home/pagina2", response_class=HTMLResponse)
+async def pag2(request: Request):
+    if (not "HX-Request" in request.headers):
+        return templates.TemplateResponse(request, "index.html")
+    return templates.TemplateResponse(request, "Pagina2.html")</code></pre>
+
+        <p>Agora, ao acessar as URLs <code>/home</code> e <code>/home/paginaX</code>, toda a página será sempre
+            renderizada corretamente.</p>
+        <p>O último problema que encontramos é que, ao acessar <code>/home/pagina2</code>, a página 1 que é renderizada.
+            Por fim, podemos utilizar uma variável de contexto para indicar para o 'index.html' qual página deve ser
+            renderizada.</p>
+        <p>Veja abaixo o código final.</p>
+
+        <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+app = FastAPI()
+
+templates = Jinja2Templates(directory=["Templates", "Templates/Partials"])
+
+@app.get("/home",response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse(request, "index.html", {"pagina": "/home  /pagina1"})
+
+@app.get("/home/pagina1", response_class=HTMLResponse)
+async def pag1(request: Request):
+    if (not "HX-Request" in request.headers):
+        return templates.TemplateResponse(request, "index.html", {"pagina": "/home/pagina1"})
+    return templates.TemplateResponse(request, "Pagina1.html")
+
+@app.get("/home/pagina2", response_class=HTMLResponse)
+async def pag2(request: Request):
+    if (not "HX-Request" in request.headers):
+        return templates.TemplateResponse(request, "index.html", {"pagina": "/home/pagina2"})
+    return templates.TemplateResponse(request, "Pagina2.html")</code></pre>
+
+        <pre><code class="language-html">&lt;!-- Arquivo index.html --&gt;
+
+&lt;DOCTYPE html&gt;
+&lt;html lang="pt-br"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Meu Site&lt;/title&gt;
+        &lt;style&gt;...&lt;/style&gt;
+        &lt;script src="HTMX"&gt;&lt;/script&gt; &lt;!-- Import do HTMX --&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Meu Site&lt;/h1&gt;
+        &lt;p&gt;Bem vindo ao meu site!&lt;/p&gt;
+        &lt;nav&gt;
+            &lt;button hx-get="/home/pagina1"
+                    hx-target="main"
+                    hx-push-url="true"&gt;
+                Página 1
+            &lt;/button&gt;
+            &lt;button hx-get="/home/pagina2"
+                    hx-target="main"
+                    hx-push-url="true"&gt;
+                Página 2
+            &lt;/button&gt;
+        &lt;/nav&gt;
+        &lt;hr&gt;
+        &lt;main hx-get="{{ pagina }}"
+              hx-target="main"
+              hx-trigger="load"
+              hx-push-url="true"&gt;
+        &lt;/main&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    </div>
+
+    <div id="atalhos">
+
+        <h3>Atalhos</h3>
+
+        <p>Na próxima aula, veremos utilidades mais avançadas do HTMX, mas vamos demonstrar uma dessas funcionalidades
+            agora. Da mesma forma que um click em um botão pode fazer um request, veremos uma forma de fazer requests
+            com atalhos no teclado.</p>
+        <p>Vamos criar uma nova div vazia no nosso 'index.html' em baixo da 'main'. Nessa div, colocaremos os atributos
+            <code>hx-get="/home/pagina3"</code> e <code>hx-trigger</code>. Dentro do trigger, vamos utilizar o
+            <code>keyup</code> para que a ação necessária para mandar o request seja o pressionar de teclas no teclado.
+            Assim, podemos fazer qualquer combinação de teclas como a mostrada abaixo.</p>
+
+        <pre><code class="language-html">&lt;div hx-get="/home/pagina3"
+     hx-trigger="keyup[altKey&&(key=='t'||key=='T')] from:body"&gt;
+&lt;/div&gt;</code></pre>
+
+        <p>No código acima, para disparar o request da página 3, o usuário deve apertar as teclas Alt+t, com 't' sendo
+            maiúsculo ou minúsculo para prevenir erros com o CapsLock. O <code>from:body</code> indica para o HTMX que
+            essas teclas podem ser pressionadas de qualquer lugar da tela. É possível passar parâmetros para que o
+            atalho apenas funcione quando partes específicas da tela estiverem selecionadas.</p>
+
+    </div>
+
+    <div id="exercicios">
+        <h2>Exercícios</h2>
+
+        <details class="note">
+            <summary>
+                <h3 style="display: inline; vertical-align: middle; margin: 0px;">
+                    Exercício em Sala
+            </summary>
+            </h3>
+            <p>Todos os exercícios dessa aula devem ser criados em um mesmo projeto do <code>FastAPI</code>.</p>
+
+            <h3 style="margin-top: 1em;">1. Curtidas</h3>
+            <p>Crie um elemento para exibir um contador de curtidas e, ao lado, coloque um botão "Curtir!". O botão deve
+                disparar um request <code>hx-post="/curtir"</code> que fará o número de curtidas aumentar.</p>
+
+            <h3>2. Confirmação</h3>
+            <p>Crie um botão para retirar todas as curtidas do seu contador. Antes de fazer o request, o navegador deve
+                emitir um alert pedindo confirmação do usuário para efetuar essa ação. O request também deve ser feito
+                para <code>/curtir</code>.</p>
+            <br>
+            <p>Não utilize JavaScript (tag <code>&lt;script&gt;</code> ou <code>onclick</code>) para o alert, o HTMX
+                possui um atributo que faz isso. Sua tarefa é descobrir qual atributo do HTMX tem essa função.</code>
+            </p>
+            <hr>
+            <span>Se não quiser ficar pesquisando:</span>
+            <label class="spoiler-container">
+                <input type="checkbox">
+                <div class="spoiler-box">
+                    <span class="hint">Revelar</span>
+                    <span class="hint-content"><code>hx-confirm="Mensagem de confirmação"</code></span>
+                </div>
+            </label>
+
+            <h3>3. Abas</h3>
+            <p>Crie um cabeçalho e uma <code>nav</code> com botões para alterar entre as abas do seu site, igual feito
+                em aula. Você deve adicionar a aba das Curtidas (criada nos Exercícios 1 e 2), sua versão do Júpiter e
+                sua página de professor "reformada" como as abas do seu site.</p>
+            <p>Os botões devem ter algum indicador visual mostrando qual aba está atualmente ativa.</p>
+            <p>O contador de curtidas deve manter seu valor mesmo que você saia da aba "Curtidas" e volte depois.</p>
+
+            <h3>4. Shortcut de teclado</h3>
+            <p>Faça com que o atalho de teclado <code>Shift+AltGr+P</code> alterne entre as abas de sua aplicação.</p>
+        </details>
+
+        <details class="note">
+            <summary>
+                <h3 style="display: inline; vertical-align: middle; margin: 0px;">
+                    Exercício para casa
+            </summary>
+            </h3>
+            <br>
+            <p>Essa semana não vamos passar exercícios para casa. Sua tarefa será finalizar seu projeto.</p>
+            <p>As especificações do projeto estão listadas <a href="">aqui</a>.</p>
+        </details>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js" defer></script>
+
+</body>
+
+</html>

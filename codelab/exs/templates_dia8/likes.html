@@ -1,0 +1,5 @@
+<div id="likes-container">
+    <p>Curtidas: <span id="contador">{{ likes }}</span></p>
+    <button hx-post="/curtir" hx-target="#likes-container" hx-swap="outerHTML">Curtir!</button>
+    <button hx-post="/curtir?reset=1" hx-target="#likes-container" hx-swap="outerHTML" hx-confirm="Tem certeza que quer zerar?">Zerar</button>
+</div>

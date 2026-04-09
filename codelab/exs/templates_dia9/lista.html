@@ -1,0 +1,18 @@
+<div id="lista-alunos">
+    <ul>
+        {% for aluno in alunos %}
+        <li>{{ aluno.nome }}</li>
+        {% endfor %}
+    </ul>
+    <div>
+        {% if has_prev %}
+        <button hx-get="/lista?page={{ page - 1 }}" hx-target="#lista-alunos" hx-swap="outerHTML">Anterior</button>
+        {% endif %}
+        
+        <span>Página {{ page }}</span>
+        
+        {% if has_next %}
+        <button hx-get="/lista?page={{ page + 1 }}" hx-target="#lista-alunos" hx-swap="outerHTML">Próxima</button>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 4: FastAPI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../styles.css">
+
+</head>
+
+<body class="container">
+    <h1>Aula 4: FastAPI</h1>
+
+    <h3><a href="../index.html">Página inicial</a></h3>
+
+    <h2>Conteúdos</h2>
+    <ul id="links-conteudo"></ul>
+
+    <h2>Front-end e back-end</h2>
+    <p>
+        Até agora vimos como fazer páginas web com HTML, estilizá-las com CSS e torná-las dinâmicas com JavaScript.
+        Tudo que escrevemos estava rodando em browsers, no que chamamos de lado do cliente ou front-end.
+        Logicamente, não podemos ter todo o código das nossas aplicações web rodando no lado do cliente.
+        Deve haver um componente remoto do nosso sistema web que funciona como uma fonte de verdade, recebe e processa
+        dados
+        dos clientes e envia respostas para eles. Esse componente é conhecido como back-end.
+    </p>
+
+    <figure>
+        <img src="https://www.getwidget.dev/blog/wp-content/uploads/2024/10/How-to-Connect-Frontend-and-Backend-Applications.png"
+            alt="Diagrama mostrando a divisão entre front-end e back-end">
+        <figcaption>Fonte: <a
+                href="https://www.getwidget.dev/blog/connect-frontend-to-backend/">https://www.getwidget.dev/blog/connect-frontend-to-backend/</a>
+        </figcaption>
+    </figure>
+
+    <p>A interação com um sistema web (ou aplicativo web) simples funciona da seguinte forma:</p>
+    <ul>
+        <li>Clientes mandam informação para o back-end através de requisições HTTP</li>
+        <li>O servidor web distribui essas requisições para um servidor de aplicação</li>
+        <li>O servidor de aplicação processa esses dados, podendo operar junto com um banco de dados</li>
+        <li>O servidor de aplicação retorna uma resposta HTTP para cada requisição</li>
+    </ul>
+
+    <h3>Métodos HTTP</h3>
+    <p>Os principais métodos HTTP usados em requisições são:</p>
+    <ul>
+        <li><code>GET</code> lê algum recurso da aplicação</li>
+        <li><code>POST</code> publica algum recurso na aplicação</li>
+        <li><code>PUT</code> atualiza algum recurso da aplicação</li>
+        <li><code>DELETE</code> apaga algum recurso da aplicação</li>
+    </ul>
+    <p>
+        Além disso, cada interação com o servidor se dá através de uma rota com um método HTTP escolhido:
+    </p>
+    <figure>
+        <img src="/static/webmac/aula4/swagger.png"
+            alt="Documentação swagger mostrando rotas de um web app de uma pet store">
+        <figcaption>Fonte: <a href="https://petstore.swagger.io/">https://petstore.swagger.io/</a></figcaption>
+    </figure>
+
+    <h3>Respostas HTTP</h3>
+    <p>
+        As respostas podem ter vários tipos de conteúdo e vários status que indicam se a requisição foi concluída com
+        sucesso.
+        O back-end pode, por exemplo:
+    </p>
+    <ul>
+        <li>Retornar um arquivo HTML como resposta ao acessar uma página de informação</li>
+        <li>Retornar uma resposta vazia com status 200 (sucesso) ao enviar um formulário para criar um perfil</li>
+        <li>Retornar um JSON com dados de um usuário ao pesquisar um nome em uma página de busca</li>
+    </ul>
+    <p>
+        Alguns exemplos de status de respostas HTTP são:
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Código de Status</th>
+                <th scope="col">Significado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td scope="row">200</td>
+                <td>OK</td>
+            </tr>
+            <tr>
+                <td scope="row">404</td>
+                <td>Not Found</td>
+            </tr>
+            <tr>
+                <td scope="row">500</td>
+                <td>Internal Server Error</td>
+            </tr>
+            <tr>
+                <td scope="row">403</td>
+                <td>Forbidden</td>
+            </tr>
+            <tr>
+                <td scope="row">301</td>
+                <td>Moved Permanently</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Ambiente Virtual de Python</h2>
+    <div class="note">
+        <p>
+            Essa seção explica como criar um ambiente virtual com o pip, o que não é possível no CEC.
+            Para fazer o setup do ambiente de desenvolvimento no CEC, leia essa seção para entender
+            o processo e siga o código na seção abaixo.
+        </p>
+    </div>
+    <p>
+        Ao trabalhar com Python, é uma boa prática usar ambientes virtuais para isolar os pacotes instalados para cada
+        projeto.
+        Dentro da pasta do nosso projeto podemos rodar o comando abaixo para criar um ambiente virtual:
+    </p>
+
+    <pre><code class="language-bash">python -m venv .venv</code></pre>
+
+    <strong>
+        Nota: existem ferramentas para gerenciar diferentes versões/instalações de Python em uma mesma máquina. Caso
+        seja
+        necessário para rodar diferentes projetos, é bom conhecer uma delas, como o pyenv.
+    </strong>
+
+    <p>
+        Podemos então ativar o ambiente virtual:
+    </p>
+
+
+    <pre><code class="language-bash">source .venv/bin/activate # para linux</code></pre>
+
+    <pre><code class="language-bash">.venv\Scripts\Activate.ps1 # para windows</code></pre>
+
+    <p>
+        Após ativar o ambiente virtual, podemos instalar as dependências do nosso projeto.
+        Uma forma básica de organizá-las é através de um arquivo requirements.txt
+    </p>
+
+    <pre><code class="language-bash">touch requirements.txt                     # cria o arquivo com dependências
+echo fastapi[standard] > requirements.txt  # adiciona o pacote do fastapi no arquivo
+pip install -r requirements.txt            # instala dependências listadas no arquivo</code></pre>
+
+    <h2>Ambiente virtual de Python (sem pip)</h2>
+    <p>
+        O script abaixo cria um ambiente virtual pulando a instalação do pip, ativa o ambiente,
+        obtém um workaround com o código do pip em binário e o executa para instalar o FastAPI.
+    </p>
+    <div class="note">
+        Sempre leia código que você vai executar no terminal, e verifique endereços web e projetos
+        utilizados. O arquivo python usado abaixo é especialmente suspeito por conta da execução de um blob binário.
+    </div>
+    <pre><code class="language-bash">python3 -m venv --without-pip .venv
+source .venv/bin/activate
+wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py
+pip install fastapi[standard]</code></pre>
+
+    <h2>Rodando o FastAPI</h2>
+
+    <p>Podemos criar um back-end rapidamente dentro de um arquivo main.py:</p>
+    <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}</code></pre>
+
+    <p>
+        O arquivo acima declara um back-end extremamente simples. Ele tem apenas uma rota (ou URL), acessável pelo
+        método GET.
+        O código da rota (ou endpoint) retorna um dicionário que é transformado pelo FastAPI em um JSON, que pode ser
+        lido por código JavaScript no browser.
+    </p>
+
+    <pre><code class="language-bash">fastapi dev # rodar servidor de aplicação em modo de desenvolvimento</code></pre>
+
+    <p>
+        O comando <code>fastapi dev</code> sobe um servidor de desenvolvimento na nossa máquina.
+        Podemos acessar o nosso back-end a partir dele no endereço http://127.0.0.1:8000, também chamado de localhost.
+        Diferentes aplicações rodando localmente podem usar diferentes portas no localhost, normalmente frameworks web
+        usam
+        a porta 8000.
+    </p>
+
+    <p>
+        Enquanto o servidor está rodando, podemos acessar localhost:8000/docs para ver a documentação das rotas do
+        nosso web app, também chamada de API. Note que apesar do termo API ser comumente associado ao retorno de JSON,
+        as rotas da API também podem retornar páginas na forma de HTML.
+    </p>
+
+    <h2>Interagindo com a API</h2>
+    Considere o código abaixo:
+    <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+usuarios = ['Yuri', 'Rodrigo', 'Hugo']
+
+@app.get("/users/{index}")
+async def users(index):
+    return {"nome": usuarios[index]}</code></pre>
+
+    <p>
+        Temos agora uma API que pode consultar usuários guardados no servidor de aplicação. Para consultar um usuário,
+        abrimos o navegador e entramos em <code>localhost:8000/users/{index}</code>, sendo index um número de 0 a 2
+        (para acessar a lista
+        corretamente).
+    </p>
+    <p>
+        A parte {index} da rota é o que chamamos de path parameter, é um parâmetro de busca inserido no path (ou rota).
+        Ao fazer um request nesse endereço, o index é lido e passado como parâmetro para a função da rota.
+        No entanto, o código acima não funciona porque o tipo padrão do index é string, o que não permite a indexação
+        correta da lista.
+    </p>
+    <p>
+        Para resolver esse problema adicionamos um type hint, uma funcionalidade da linguagem Python que indica tipos de
+        variáveis:
+    </p>
+
+    <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+usuarios = ['Yuri', 'Rodrigo', 'Hugo']
+
+@app.get("/users/{index}")
+async def users(index: int):
+    return {"nome": usuarios[index]}</code></pre>
+
+    <p>
+        Agora o FastAPI sabe como interpretar a variável index e faz o cast automatico para o seu tipo.
+        Com isso, podemos acessar <code>localhost:8000/users/1</code> e ler <code>{"nome":"Rodrigo"}</code>
+    </p>
+
+    <p>
+        Note que se acessarmos <code>localhost:8000/users/string</code> vamos ver um erro apropriado indicando
+        que o tipo do nosso parâmetro de busca não é o que a API espera. Essa funcionalidade é muito útil para
+        corrigir problemas em código que vai interagir com nosso back-end.
+    </p>
+
+    <h2>Tipagem em Python</h2>
+    <p>
+        Apesar de Python ser uma linguagem dinamicamente tipada podemos usar type hints, indicações no código do
+        tipo que uma variável deve ter. Elas tornam o código mais compreensível e melhoram a interação com seu editor
+        de código.
+    </p>
+
+    <pre><code class="language-python"># Sem type hints--------------------------------------------
+def get_full_name(first_name, last_name):
+    full_name = first_name.title() + " " + last_name.title()
+    return full_name
+print(get_full_name("john", "doe"))
+        
+# Com type hints--------------------------------------------
+def get_full_name(first_name: str, last_name: str):
+    full_name = first_name.title() + " " + last_name.title()
+    return full_name
+print(get_full_name("john", "doe"))</code></pre>
+
+    <p>Os tipos básicos usados em anotação incluem:</p>
+    <ul>
+        <li><code>int</code></li>
+        <li><code>float</code></li>
+        <li><code>bool</code></li>
+        <li><code>bytes</code></li>
+    </ul>
+    <p>
+        Importando o módulo <code>typing</code> conseguimos usar outros tipos em anotações, como o <code>Any</code>
+    </p>
+    <pre><code class="language-python">from typing import Any
+
+def some_function(data: Any):
+    print(data)</code></pre>
+
+    <p>
+        Podemos também usar tipos genéricos, que aceitam outros tipos dentro:
+    </p>
+    <ul>
+        <li><code>list</code></li>
+        <li><code>tuple</code></li>
+        <li><code>set</code></li>
+        <li><code>dict</code></li>
+    </ul>
+    <pre><code class="language-python">def process_items_list(items: list[str]):
+    for item in items:
+        print(item.capitalize())
+
+def process_items_tuple(items_t: tuple[int, int, str], items_s: set[bytes]):
+    return items_t, items_s
+
+def process_items_dict(prices: dict[str, float]):
+    for item_name, item_price in prices.items():
+        print(item_name)
+        print(item_price)</code></pre>
+
+    <p>
+        Caso uma variável possa ter mais de um tipo podemos declarar uma união de tipos:
+    </p>
+    <pre><code class="language-python">def process_item(item: int | str):
+    print(item)
+
+def say_hi(name: str | None = None): # Aqui indicamos que name pode ser None
+    if name is not None:
+        print(f"Hey {name}!")
+    else:
+        print("Hello World")</code></pre>
+
+    <p>
+        Por fim, podemos declarar uma classe como o tipo de uma variável. Isso é especialmente útil
+        quando programamos com FastAPI para fazer a verificação dos dados enviados para um endpoint.
+    </p>
+    <pre><code class="language-python"># Arquivo main.py 
+
+class Person:
+    def __init__(self, name: str):
+        self.name = name
+
+def get_person_name(one_person: Person):
+    return one_person.name</code></pre>
+
+    <p>
+        Geralmente o comportamento do código não muda quando adicionamos type hints. O FastAPI, entretanto,
+        é baseado na biblioteca Pydantic, que implementa uma série de comportamentos adicionais baseados
+        nas anotações de tipos. Com o Pydantic declaramos classes que serão instanciadas com valores externos
+        que serão validados e convertidos automaticamente, como no exemplo abaixo:
+    </p>
+
+    <pre><code class="language-python">from datetime import datetime
+from pydantic import BaseModel
+
+class User(BaseModel):
+    id: int
+    name: str = "John Doe"
+    signup_ts: datetime | None = None
+    friends: list[int] = []
+
+external_data = {
+    "id": "123",
+    "signup_ts": "2017-06-01 12:22",
+    "friends": [1, "2", b"3"],
+}
+
+user = User(**external_data)
+
+print(user)
+# > User id=123 name='John Doe' signup_ts=datetime.datetime(2017, 6, 1, 12, 22) friends=[1, 2, 3]
+print(user.id)
+# > 123</code></pre>
+
+    <h2>Query parameters</h2>
+    <p>
+        Quando declaramos parâmetros na função da rota que não fazem parte do path, eles automaticamente são
+        interpretados como query parameters, ou parâmetros de consulta.
+    </p>
+
+    <pre><code class="language-python"># Arquivo main.py 
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
+
+@app.get("/items/")
+async def read_item(skip: int = 0, limit: int = 10):
+    return fake_items_db[skip : skip + limit]</code></pre>
+
+    <p>
+        No endereço <code>http://127.0.0.1:8000/items/?skip=0&limit=10</code> os parâmetros são <code>skip</code> com
+        valor
+        0 e <code>limit</code> com valor 10. Eles naturalmente são strings, pela forma como o protocolo HTTP funciona,
+        mas o FastAPI também usa as type hints para fazer a verificação e conversão automática
+        de tipos dos parâmetros.
+    </p>
+    <p>
+        Note que podemos tornar o parâmetro opcional ao declarar um valor padrão para ele. Também podemos indicar que
+        seu valor pode ser None usando type hints. <strong>Caso não seja declarado um valor padrão para o parâmetro, ele
+            se
+            torna obrigatório.</strong>
+    </p>
+    <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/items/{item_id}")
+async def read_user_item(item_id: str, needy: str):
+    item = {"item_id": item_id, "needy": needy}
+    return item</code></pre>
+
+    <h2>Corpo do request</h2>
+    <p>
+        Quando mandamos dados para a nossa aplicação através da API, por exemplo com um request POST, eles são enviados
+        no corpo do request. Com FastAPI fazemos a verificação dos dados recebidos nesses requests através de classes
+        do Pydantic:
+    </p>
+    <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+class Item(BaseModel):               # aqui declaramos os dados que queremos receber e seus tipos
+    name: str                        # campo necessário
+    description: str | None = None   # campo opcional, valor padrão None
+    price: float
+    tax: float | None = None
+
+app = FastAPI()
+
+@app.post("/items/")
+async def create_item(item: Item):  # adicionamos a type hynt com a classe que criamos para instanciar um item
+    return item</code></pre>
+
+    <p>
+        Automaticamente o FastAPI fará
+    </p>
+    <ul>
+        <li>Leitura do corpo do request como JSON</li>
+        <li>Conversão de tipos</li>
+        <li>Validação dos dados</li>
+        <li>Inicialização de um objeto da classe declarada</li>
+        <li>Atualização da documentação com as entradas esperadas pela API</li>
+    </ul>
+
+
+
+    <h2>Renderizando HTML</h2>
+    <p>
+        Podemos enviar HTML no corpo da resposta da API para que o browser renderize algo na página. Com FastAPI fazemos
+        isso
+        através de uma HTMLResponse:
+    </p>
+    <pre><code class="language-python"># Arquivo main.py
+
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
+
+@app.get("/items/", response_class=HTMLResponse)
+async def read_items():
+    return """
+    &lthtml&gt
+        &lthead&gt
+            &lttitle&gtSome HTML in here&lt/title&gt
+        &lt/head&gt
+        &ltbody&gt
+            &lth1&gtLook ma! HTML!&lt/h1&gt
+        &lt/body&gt
+    &lt/html&gt
+    """</code></pre>
+
+    <h2>Concorrência e async/await</h2>
+    <p>
+        Talvez você tenha estranhado a linha de código abaixo:
+    </p>
+
+    <pre><code class="language-python">async def root():</code></pre>
+
+    <p>
+        A declaração de função aqui usa o <code>async</code>, uma sintaxe de Python que organiza
+        a execução de código assíncrono junto com o <code>await</code>.
+        Em linhas gerais, usamos o <code>async</code> ao declarar funções que usem o <code>await</code> dentro,
+        e usamos o <code>await</code> quando uma biblioteca diz que deveríamos usar. Geralmente o uso do
+        <code>await</code> é associado à comunicação com componentes externos ao código ou processos demorados.
+    </p>
+
+    <pre><code class="language-python">@app.get('/')
+async def read_results():
+    results = await some_library()
+    return results</code></pre>
+
+    <p>
+        Declarar funções com o <code>async</code> permite que o FastAPI otimize o servidor de aplicação para
+        que ele possa ser usado por mais usuários ao mesmo tempo e que os tempos de resposta sejam os mais rápidos
+        possíveis.
+    </p>
+
+    <h2>Exercícios</h2>
+    <h3>Exercício de Sala</h3>
+    <p>
+        Faça uma API com os quatro endpoints:
+    </p>
+    <ul>
+        <li><code>@app.get('/')</code> Envia a página HTML abaixo para o usuário</li>
+        <li><code>@app.post("/users")</code> Adiciona um usuário numa lista</li>
+        <li><code>@app.get("/users")</code> Lê todos os usuários da lista ou um índice específico (usando query
+            parameter)</li>
+        <li><code>@app.delete("/users")</code> Limpa a lista de usuários</li>
+    </ul>
+    <p>
+        Abaixo está a página que vai ser enviada através da API e vai renderizar as respostas dos outros requests:
+    </p>
+    <pre><code class="language-html">&lt!DOCTYPE html&gt
+&lthtml lang="en"&gt
+&lthead&gt
+    &ltmeta charset="UTF-8"&gt
+    &ltmeta name="viewport" content="width=device-width, initial-scale=1.0"&gt
+    &ltscript src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"&gt&lt/script&gt
+    &ltscript src="https://unpkg.com/htmx.org@1.9.12/dist/ext/json-enc.js"&gt&lt/script&gt
+    &lttitle&gtRequests&lt/title&gt
+    &ltstyle&gt
+        body {
+            display: flex;
+            gap: 2.5vw;
+            justify-content: center;
+            min-height: 90vh;
+            background-color: #292827;
+            color: #e0e0e0;
+        }
+
+        .secao-interacao, .secao-respostas {
+            border: 2px solid #ff690a;
+            border-radius: 15px;
+            padding: 20px;
+            width: 50%;
+            height: auto;
+        }
+
+        .secao-interacao, form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media(orientation: portrait) {
+            body {
+                flex-direction: column;
+                gap: 2.5vh;
+                min-height: auto;
+            }
+
+            .secao-interacao, .secao-respostas {
+                min-height: 30vh;
+                width: auto;
+            }
+        }
+
+        #json-insert {
+            color: #ff690a;
+            font-size: xx-large;
+        }
+
+        /* Estilização dos elementos de interação com inputs */
+        label {
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #ff690a;
+        }
+
+        input[type="text"], 
+        input[type="number"] {
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:hover, 
+        input[type="number"]:hover {
+            border-color: #666;
+        }
+
+        input[type="text"]:focus, 
+        input[type="number"]:focus {
+            border-color: #ff690a;
+            box-shadow: 0 0 8px rgba(255, 105, 10, 0.3);
+            background-color: #252525;
+        }
+
+        input[type="submit"], button {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #ff690a;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        input[type="submit"]:hover, button:hover {
+            background-color: #e55a00;
+        }
+
+        input[type="submit"]:active, button:active {
+            transform: scale(0.98);
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #444;
+            margin: 25px 0;
+            width: 100%;
+        }
+    &lt/style&gt
+&lt/head&gt
+&ltbody&gt
+    &ltdiv class="secao-interacao"&gt
+        &lth1&gtRequests&lt/h1&gt
+        &ltform hx-post="/users"
+            hx-trigger="submit"
+            hx-target="#json-insert"
+            hx-swap="innerHTML"
+            hx-ext="json-enc"&gt  
+            &ltlabel for="nome"&gtNome do usuário&lt/label&gt
+            &ltinput type="text" name="nome"&gt
+            &ltlabel for="idade"&gtIdade do usuário&lt/label&gt
+            &ltinput type="number" name="idade"&gt
+            &ltinput type="submit"&gt
+        &lt/form&gt
+        &lthr&gt
+        &ltinput type="number"
+            name="index"
+            hx-get="/users"
+            hx-trigger="input changed"
+            hx-target="#json-insert"
+            hx-swap="innerHTML"
+            placeholder="Índice do usuário"&gt
+        &lthr&gt
+        &ltbutton hx-get="/users"
+                hx-target="#json-insert"
+                hx-swap="innerHTML"&gt
+            Obter todos os usuários
+        &lt/button&gt
+        &lthr&gt
+        &ltbutton hx-delete="/users"
+                hx-target="#json-insert"
+                hx-swap="innerHTML"&gt
+            Apagar todos os usuários
+        &lt/button&gt
+    &lt/div&gt
+
+    &ltdiv class="secao-respostas"&gt
+        &lth1&gtRespostas&lt/h1&gt
+        &ltdiv id="json-insert"&gt&lt/div&gt
+    &lt/div&gt
+&lt/body&gt
+&lt/html&gt</code></pre>
+
+    <!-- Prism.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js" defer></script>
+
+    <script>
+        let divLinks = document.getElementById('links-conteudo')
+        let h2List = document.querySelectorAll('h2')
+        let h2Counter = 0
+        h2List.forEach(h2 => {
+            h2.id = `secao${h2Counter}`
+            h2Counter++
+
+            let linkSecao = document.createElement('a')
+            linkSecao.innerText = h2.innerText
+            linkSecao.setAttribute('href', `#${h2.id}`)
+
+            let liWrapper = document.createElement('li')
+            liWrapper.append(linkSecao)
+            divLinks.append(liWrapper)
+        });
+    </script>
+
+</body>
+
+</html>
