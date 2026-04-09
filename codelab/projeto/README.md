@@ -4,7 +4,7 @@ O projeto individual foi a construção de um portal unificado da REGEx, REuniã
 
 Foi implementado cumprindo as especificações detalhadas no projeto [WebMAC](https://webdev2025.lol/webmac/projeto.html).
 
-## Como Rodar o Web App Localmente
+## Como rodar o site localmente
 
 Os arquivos de cache do Python, a pasta do ambiente virtual e o banco de dados não estão inclusos neste repositório. Para fazer a configuração inicial, instalar as dependências e popular o banco de dados (gerando o arquivo `database.db`), execute o script providenciado:
 
@@ -20,7 +20,47 @@ source venv/bin/activate
 uvicorn main:app --reload
 ```
 
-Acesse no seu navegador: `http://localhost:8000` ou 'http://127.0.0.1:8000'
+Acesse no seu navegador: `http://localhost:8000` ou `http://127.0.0.1:8000`
+
+## Uso
+
+O portal oferece funcionalidades distintas para visitantes e para os membros dos grupos de extensão.
+
+### Para Visitantes
+- **Exploração de Grupos**: Na página inicial, é possível ver todos os grupos registrados, com busca e filtros dinâmicos. Utilize a barra de pesquisa para encontrar grupos específicos. A listagem pode ser ordenada alfabeticamente ou manter a ordem padrão.
+- **Calendário Unificado**: Acesse a aba "Calendário" para ver uma agenda completa com eventos futuros e o histórico de eventos passados.
+- **Páginas de Grupo**: Cada grupo possui uma página dedicada com descrição, sua própria lista de eventos, link para o site oficial do grupo, e links auxiliares para divulgação (ainda não implementados)
+- **Modo Escuro (Dark Mode)**: No cabeçalho, clique no ícone de tema para alternar entre as versões clara e escura do portal.
+
+### Gerenciamento (Painel Administrativo)
+
+Para gerenciar o conteúdo, clique em **Entrar** no menu superior. 
+
+#### Como Logar
+Existem dois níveis de permissão no site:
+
+**1. Administrador Central**
+
+- **Usuário**: `admin`
+- **Senha**: `admin`
+
+**2. Acesso de Grupo**
+Permite gerenciar apenas o conteúdo (eventos e perfil) do seu próprio grupo.
+- **Usuário**: Primeira palavra do nome do grupo em minúsculas (ex: `imesec`, `codelab`, `maratonusp`, etc).
+- **Senha**: Mesma do usuário.
+
+#### Funcionalidades sobre o Banco de Dados:
+- **Gerenciar Eventos**:
+    - **Criar**: Adicionar novos eventos através do formulário dedicado.
+    - **Editar**: Modificar detalhes de eventos existentes.
+    - **Excluir**: Remover eventos da agenda.
+- **Editar Perfil do Grupo**: 
+    - Atualizar a descrição, o site oficial, e a imagem de logo (via URL externa ou realizando upload de arquivos).
+
+#### OBSERVAÇÃO IMPORTANTE
+
+**O DIRETÓRIO NÃO ESTÁ SANITIZADO PARA VULNERABILIDADES DE SEGURANÇA**
+
 
 ## Descrição do diretório
 
@@ -53,21 +93,6 @@ Acesse no seu navegador: `http://localhost:8000` ou 'http://127.0.0.1:8000'
         └── group_list.html       -> Grid de grupos da Home.
 ```
 
-### Como Logar no Painel Administrativo
-
-A plataforma suporta dois níveis de hierarquia de acesso (role-based) para facilitar o gerenciamento cooperativo:
-
-**1. Administrador Central**
-
-Possui poder de gerenciar, editar, cadastrar e apagar **todos os eventos de qualquer grupo**.
-
-- **Usuário**: `admin`
-- **Senha**: `admin`
-
-**2. Acesso Limitado por Grupo**
-Para limitar os líderes a editar/apagar APENAS os eventos da sua própria página, pode-se logar com as credenciais cadastradas daquele grupo. O painel listará exclusivamente as suas propriedades. O nome de usuário e senha devem ser **a primeira palavra do nome do grupo, em letras minúsculas**.
-- **Usuário**: `usp` (para USP Game Dev), `uspcodelab` (para USPCodeLab), `flusp` (para FLUSP), `hardware` (para Hardware Livre), etc.
-- **Senha**: Igual ao usuário (ex: `usp`, `uspcodelab`, `flusp`, etc)
 
 ## Funcionalidades Implementadas
 
