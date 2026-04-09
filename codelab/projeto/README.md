@@ -57,9 +57,9 @@ Permite gerenciar apenas o conteúdo (eventos e perfil) do seu próprio grupo.
 - **Editar Perfil do Grupo**: 
     - Atualizar a descrição, o site oficial, e a imagem de logo (via URL externa ou realizando upload de arquivos).
 
-### OBSERVAÇÃO IMPORTANTE
+### OBSERVAÇÃO IMPORTANTE:
 
-**O DIRETÓRIO NÃO ESTÁ SANITIZADO PARA VULNERABILIDADES DE SEGURANÇA**
+**!!! O DIRETÓRIO NÃO ESTÁ SANITIZADO PARA VULNERABILIDADES DE SEGURANÇA !!!**
 
 
 ## Descrição do diretório
@@ -96,29 +96,26 @@ Permite gerenciar apenas o conteúdo (eventos e perfil) do seu próprio grupo.
 
 ## Funcionalidades Implementadas
 
-### 1. Requisitos de Telas: HTML, CSS, JS e Responsividade
-Criou-se diversas rotas usando o poderoso CSS puro (`static/css/style.css`):
-- Página Inicial: Listagem de grupos de extensão.
-- Página do Calendário: Tabela completa de eventos.
-- Página do Grupo: Exibição focada por grupo específico.
+### 1. Interface e Responsividade
+- **Múltiplas Rotas e Templates**: Utilização de Jinja2 para renderização de páginas distintas (`index`, `group`, `calendar`, `admin` e `login`).
+- **Layout Responsivo**: Implementação de Flexbox e Grid em CSS puro, garantindo compatibilidade com diferentes resoluções de tela.
+- **Gerenciamento de Temas**: Alternância entre tema claro e escuro persistida via `localStorage` e variáveis CSS (`:root`).
 
-A responsividade foi alcançada através de `grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))` no CSS, `media actions` e `flex` containers, garantindo que os cards se adaptem ordenadamente no celular, e o menu alinhe verticalmente em telas menores que 768px.
+### 2. Persistência de Dados (SQLModel)
+- **Modelagem Relacional**: Definição de entidades `ExtensionGroup` e `Event` com relacionamento de chave estrangeira (Um-para-Muitos).
+- **Banco de Dados SQLite**: Uso do `SQLModel` para integração entre o modelo de dados e a persistência em arquivo local.
+- **Idempotência no Seed**: Script de inicialização que verifica a existência prévia de registros para evitar duplicidade de dados.
 
-### 2. O Banco de Dados e SQLModel
-Aplicou-se o `FastAPI` e a lib de banco de dados ensinada `SQLModel` gerando 2 entidades de relacionamento `One-to-Many`:
-- ExtensionGroup: Possui id, logo_url, descrição e múltiplos eventos.
-- Event: Possui data, grupo associado (ForeignKey), descrição e link com um ExtensionGroup.
+### 3. Autenticação e Controle de Acesso
+- **Autenticação via JWT**: Implementação de fluxos de login com geração e validação de JSON Web Tokens.
+- **RBAC (Role-Based Access Control)**: Diferenciação de permissões entre o Administrador Central (acesso global) e Administradores de Grupo (acesso restrito aos dados da própria entidade).
+- **Persistência de Sessão**: Armazenamento de tokens em Cookies e LocalStorage para manutenção do estado de autenticação.
 
-### 3. HTMX para Busca Viva (hx-get)
-Implementou-se o requisito "Busca de objetos" usando HTMX.
-Na página inicial, o usuário tem a Barra de Pesquisa de Grupos.
-Enquanto o usuário digita na barra (com delay de `300ms`), um sinal `hx-get="/"` enviará parâmetros na requisição e renderizará apenas as linhas filtradas sem estourar nenhum load inteiro na página (`hx-target="#groups-grid"`).
+### 4. Interatividade com HTMX
+- **Filtragem Dinâmica**: Busca de grupos na página inicial via `hx-get`, realizando consultas parciais e atualização seletiva do DOM.
+- **CRUD Administrativo**: Execução das operações de criação (`POST`), edição (`GET/PUT`) e remoção (`DELETE`) de eventos via requisições assíncronas HTMX.
+- **Feedback de Interface**: Uso de confirmações nativas via `hx-confirm` e atualizações de status sem recarregamento da página.
 
-### 4. Ciclo de CRUD Completo usando HTMX
-
-No painel `/calendar`, gerenciou-se todos os Eventos através do front-end apenas utilizando tags HTML com propriedades `HTMX`:
-
-- Ler (hx-get): Além da pesquisa da home, as rotas `/events/{id}/edit` e `/events/{id}/row` recuperam os fragmentos individuais para montagem inline no HTML.
-- Criar (hx-post): O cadastro de novo evento ao fim do HTML de Calendário adiciona o elemento diretamente na tabela com a propriedade `hx-target="#events-tbody" hx-swap="beforeend"`.
-- Apagar (hx-delete): Os botões vermelhos utilizam a rota para apagar via `hx-delete="/events/{{id}}"`. Há suporte dinâmico com `hx-confirm="Deletar este evento?"`.
-- Atualizar (hx-put): Ao pressionar Editar via HTMX, a linha da tabela é re-renderizada exibindo inputs. Após confirmada a edição, envia-se um formulário com os valores a atualizar sob a rota PUT, o que reflete no servidor FastAPI com `session.commit`.
+### 5. Gerenciamento de Arquivos
+- **Upload de Logos**: Suporte para recebimento de arquivos via multipart form data (`UploadFile`).
+- **Persistência de Mídia**: Armazenamento de imagens no diretório `static/images/` com atualização automática dos endereços no banco de dados.
