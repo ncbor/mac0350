@@ -20,10 +20,9 @@ uvicorn main:app --reload
 
 Acesse no seu navegador: `http://localhost:8000`
 
----
-
 ## Descrição do diretório
 
+```
 .
 ├── README.md       -> Este arquivo (descrição do projeto e guia de uso).
 ├── afazeres.txt    -> Lista de pendências e melhorias futuras.
@@ -50,6 +49,7 @@ Acesse no seu navegador: `http://localhost:8000`
         ├── event_row.html        -> Linha simples de eventos.
         ├── event_row_admin.html  -> Linha com botões de excluir/editar.
         └── group_list.html       -> Grid de grupos da Home.
+```
 
 ### Como Logar no Painel Administrativo
 
