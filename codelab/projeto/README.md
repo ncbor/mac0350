@@ -1,24 +1,26 @@
-# REGEx BCC IME-USP - Documentação Final
+# Projeto Individual MAC0350 | REGEx BCC IME-USP | Documentação
 
-O portal para divulgar, unificar e facilitar o gerenciamento dos grupos de extensão do BCC IME-USP foi implementado cumprindo as especificações detalhadas no projeto [WebMAC](https://webdev2025.lol/webmac/projeto.html).
+O projeto individual foi a construção de um portal unificado da REGEx, REunião dos Grupos de Extensão do IME USP, a fim de unificar o acesso e a divulgação das informações do grupo, com fácil gerenciamento por parte dos grupos de extensão. 
+
+Foi implementado cumprindo as especificações detalhadas no projeto [WebMAC](https://webdev2025.lol/webmac/projeto.html).
 
 ## Como Rodar o Web App Localmente
 
-Os arquivos de cache do Python e a pasta do ambiente virtual não estão inclusos neste repositório. Para fazer a configuração inicial, instalar as dependências e popular o banco de dados gerando o arquivo `database.db`, execute o script providenciado:
+Os arquivos de cache do Python, a pasta do ambiente virtual e o banco de dados não estão inclusos neste repositório. Para fazer a configuração inicial, instalar as dependências e popular o banco de dados (gerando o arquivo `database.db`), execute o script providenciado:
 
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
-Após a configuração automatizada acima finalizar, para rodar o servidor basta utilizar:
+Após a configuração automatizada acima finalizar, para rodar o site localmente basta utilizar:
 
 ```bash
 source venv/bin/activate
 uvicorn main:app --reload
 ```
 
-Acesse no seu navegador: `http://localhost:8000`
+Acesse no seu navegador: `http://localhost:8000` ou 'http://127.0.0.1:8000'
 
 ## Descrição do diretório
 
@@ -33,11 +35,11 @@ Acesse no seu navegador: `http://localhost:8000`
 ├── setup.sh        -> Script para inicialização do ambiente.
 │
 ├── static
-│   ├── css
-│   │   └── style.css -> Estilos usados + Dark Mode.
-│   └── images -> Logos e imagens enviadas via upload.
+│   ├── css             -> Estilos usados + Dark Mode.
+│   │   └── style.css   
+│   └── images          -> Logos e imagens enviadas via upload.
 │
-└── templates           -> Páginas HTML utilizadas (Jinja2).
+└── templates       -> Páginas HTML utilizadas (Jinja2).
     ├── admin.html      -> Painel de controle administrativo.
     ├── base.html       -> Estrutura comum do site (cabeçalho, scripts, etc).
     ├── calendar.html   -> Agenda únificada pública de eventos.
@@ -56,7 +58,9 @@ Acesse no seu navegador: `http://localhost:8000`
 A plataforma suporta dois níveis de hierarquia de acesso (role-based) para facilitar o gerenciamento cooperativo:
 
 **1. Administrador Central**
+
 Possui poder de gerenciar, editar, cadastrar e apagar **todos os eventos de qualquer grupo**.
+
 - **Usuário**: `admin`
 - **Senha**: `admin`
 
