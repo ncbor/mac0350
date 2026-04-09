@@ -94,27 +94,40 @@ Permite gerenciar apenas o conteúdo (eventos e perfil) do seu próprio grupo.
 ```
 
 
-## Funcionalidades Implementadas
+## Funcionalidades Obrigatórias Implementadas
 
 ### 1. Interface e Responsividade
 - **Múltiplas Rotas e Templates**: Utilização de Jinja2 para renderização de páginas distintas (`index`, `group`, `calendar`, `admin` e `login`).
 - **Layout Responsivo**: Implementação de Flexbox e Grid em CSS puro, garantindo compatibilidade com diferentes resoluções de tela.
-- **Gerenciamento de Temas**: Alternância entre tema claro e escuro persistida via `localStorage` e variáveis CSS (`:root`).
+- **Dark mode**: Implementei Dark Mode pois gosto mais, via `localStorage` e variáveis CSS (`:root`).
 
-### 2. Persistência de Dados (SQLModel)
-- **Modelagem Relacional**: Definição de entidades `ExtensionGroup` e `Event` com relacionamento de chave estrangeira (Um-para-Muitos).
-- **Banco de Dados SQLite**: Uso do `SQLModel` para integração entre o modelo de dados e a persistência em arquivo local.
-- **Idempotência no Seed**: Script de inicialização que verifica a existência prévia de registros para evitar duplicidade de dados.
+### 2. O Banco de Dados (SQLite)
+Aplicou-se o `FastAPI` e a lib de banco de dados ensinada `SQLModel` gerando 2 entidades de relacionamento `One-to-Many`:
+- ExtensionGroup: Possui id, logo_url, descrição e múltiplos eventos.
+- Event: Possui data, grupo associado (ForeignKey), descrição e link com um ExtensionGroup.
 
-### 3. Autenticação e Controle de Acesso
-- **Autenticação via JWT**: Implementação de fluxos de login com geração e validação de JSON Web Tokens.
-- **RBAC (Role-Based Access Control)**: Diferenciação de permissões entre o Administrador Central (acesso global) e Administradores de Grupo (acesso restrito aos dados da própria entidade).
-- **Persistência de Sessão**: Armazenamento de tokens em Cookies e LocalStorage para manutenção do estado de autenticação.
-
-### 4. Interatividade com HTMX
+### 3. Interatividade (HTMX)
 - **Filtragem Dinâmica**: Busca de grupos na página inicial via `hx-get`, realizando consultas parciais e atualização seletiva do DOM.
 - **CRUD Administrativo**: Execução das operações de criação (`POST`), edição (`GET/PUT`) e remoção (`DELETE`) de eventos via requisições assíncronas HTMX.
 - **Feedback de Interface**: Uso de confirmações nativas via `hx-confirm` e atualizações de status sem recarregamento da página.
+
+#### Descrição do ciclo de CRUD completo usando HTMX
+
+#### Descrição do ciclo de CRUD completo usando HTMX
+
+No painel `/admin`, o gerenciamento de eventos é feito através de requisições assíncronas que atualizam apenas partes específicas da página:
+
+- **Ler (hx-get)**: Além da busca na home, o painel administrativo carrega fragmentos de edição (`/events/{id}/edit`) e linhas de visualização (`/events/{id}/row_admin`) dinamicamente.
+- **Criar (hx-post)**: O formulário de cadastro ao final do painel administrativo envia os dados para o servidor e, em caso de sucesso, anexa a nova linha diretamente à tabela (`hx-swap="beforeend"` no alvo `#events-tbody`).
+- **Atualizar (hx-put)**: Ao confirmar uma edição, os novos dados são enviados via método PUT. O servidor processa e retorna a linha atualizada, que substitui o formulário de edição instantaneamente.
+- **Deletar (hx-delete)**: Os botões de exclusão disparam uma requisição DELETE e, após a confirmação do usuário (`hx-confirm`), o HTMX remove o elemento correspondente da tabela automaticamente.
+
+## Funcionalidades Extras Implementadas
+
+### 4. Autenticação e Controle de Acesso (OAuth2)
+- **Autenticação via JWT**: Implementação de fluxos de login com geração e validação de JSON Web Tokens.
+- **RBAC (Role-Based Access Control)**: Diferenciação de permissões entre o Administrador Central (acesso global) e Administradores de Grupo (acesso restrito aos dados da própria entidade).
+- **Persistência de Sessão**: Armazenamento de tokens em Cookies e LocalStorage para manutenção do estado de autenticação.
 
 ### 5. Gerenciamento de Arquivos
 - **Upload de Logos**: Suporte para recebimento de arquivos via multipart form data (`UploadFile`).
