@@ -1,17 +1,18 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 from database import engine, create_db_and_tables
 from models import ExtensionGroup, Event
 
+# Popula o banco com dados iniciais se estiver vazio
 def seed_data():
     create_db_and_tables()
     with Session(engine) as session:
-        # Purgue db to allow re-seeding
-        for group in session.query(ExtensionGroup).all():
-            session.delete(group)
-        for event in session.query(Event).all():
-            session.delete(event)
-        session.commit()
+        # Se já tiver grupos, não faz nada pra não duplicar ou apagar dados manuais
+        if session.exec(select(ExtensionGroup)).first():
+            print("Banco já possui dados. Pulando semente.\nSe quiser fazer o seed de novo, delete database.db")
+            return
 
+        print("Populando banco de dados com grupos e eventos...")
+        
         groups = [
             ExtensionGroup(name="IMEsec", description="Grupo de extensão focado em aprender, estudar e se divertir com a segurança da informação, aberto a qualquer aluno, bastando ter interesse. Encontros de hacking, criptografia, proteção de um servidor, desafios e competições, aulas e palestras.", logo_url="https://www.ime.usp.br/media/ccex/imesec.png", website="https://imesec.ime.usp.br/"),
             ExtensionGroup(name="CodeLab", description="Grupo de extensão universitária que tem como objetivo estimular a inovação tecnológica na USP com iniciativas para complementar a formação dos estudantes para se tornarem engenheiros de software capazes de desenvolverem sistemas reais, escolas de férias voltadas ao desenvolvimento de projetos em equipe e hackatons.", logo_url="https://www.ime.usp.br/media/ccex/uspcodelab.png", website="https://codelab.ime.usp.br/"),
@@ -29,41 +30,23 @@ def seed_data():
             session.add(g)
         session.commit()
         
+        # Pega as IDs geradas pros eventos
         for g in groups:
             session.refresh(g)
 
-        usp_codelab = next((g for g in groups if g.name == "CodeLab"), groups[0])
-        usp_gamedev = next((g for g in groups if g.name == "USPGameDev"), groups[0])
-        imesec = next((g for g in groups if g.name == "IMEsec"), groups[0])
+        # Alguns eventos pra começar
+        codelab = next(g for g in groups if g.name == "CodeLab")
+        gamedev = next(g for g in groups if g.name == "USPGameDev")
+        imesec = next(g for g in groups if g.name == "IMEsec")
 
-        e1 = Event(
-            title="Aula de WebMAC #10",
-            date="2026-04-10T10:00:00",
-            location="Sala 141, Bloco A",
-            description="Aula sobre Docker.",
-            group_id=usp_codelab.id
-        )
-        e2 = Event(
-            title="Game Jam Semestral",
-            date="2026-05-15T18:00:00",
-            location="Auditório Jacy Monteiro",
-            description="Maratona de desenvolvimento de jogos em 48h.",
-            group_id=usp_gamedev.id
-        )
-        e3 = Event(
-            title="CyberCafé 2026.1",
-            date="2026-06-08T13:00:00",
-            location="Auditório Jacy Monteiro",
-            description="Colóquios de Cibersegurança (com surpresas rs).",
-            group_id=imesec.id
-        )
+        session.add_all([
+            Event(title="Workshop de Docker", date="2026-04-10T10:00:00", location="Sala 141-A", description="Introdução prática a containers.", group_id=codelab.id),
+            Event(title="Game Jam de Inverno", date="2026-05-15T18:00:00", location="Auditório Jacy", description="48 horas criando jogos.", group_id=gamedev.id),
+            Event(title="CyberCafé", date="2026-06-08T13:00:00", location="Vila dos Grupos", description="Bate-papo sobre segurança.", group_id=imesec.id)
+        ])
         
-
-        session.add(e1)
-        session.add(e2)
         session.commit()
-
-        print("Database seeded successfully.")
+        print("Database construída com sucesso!")
 
 if __name__ == "__main__":
     seed_data()

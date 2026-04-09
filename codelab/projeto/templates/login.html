@@ -12,19 +12,19 @@
             <label for="password">Senha</label>
             <input type="password" id="password" name="password" required>
         </div>
+
         <button type="submit" class="btn">Entrar</button>
         <p id="error-msg" style="color: var(--danger); margin-top: 1rem; display: none;">Credenciais inválidas</p>
     </form>
 </div>
-
 <script>
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
+    // Lógica de login simples
+    document.getElementById('login-form').onsubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const resp = await fetch('/token', {
-            method: 'POST',
-            body: formData
-        });
+        const fd = new FormData(e.target);
+
+        const resp = await fetch('/token', { method: 'POST', body: fd });
+
         if (resp.ok) {
             const data = await resp.json();
             localStorage.setItem('token', data.access_token);
@@ -32,6 +32,6 @@
         } else {
             document.getElementById('error-msg').style.display = 'block';
         }
-    });
+    };
 </script>
 {% endblock %}

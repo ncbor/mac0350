@@ -20,6 +20,37 @@ uvicorn main:app --reload
 
 Acesse no seu navegador: `http://localhost:8000`
 
+---
+
+## Descrição do diretório
+
+.
+├── README.md       -> Este arquivo (descrição do projeto e guia de uso).
+├── afazeres.txt    -> Lista de pendências e melhorias futuras.
+├── database.py     -> Manuseamento de SQLModel.
+├── main.py         -> Servidor FastAPI com as rotas e lógicas básicas
+├── models.py       -> Definições das classes de Grupos e Eventos.
+├── seed.py         -> Script para popular o banco inicial.
+├── setup.sh        -> Script para inicialização do ambiente.
+│
+├── static
+│   ├── css
+│   │   └── style.css -> Estilos usados + Dark Mode.
+│   └── images -> Logos e imagens enviadas via upload.
+│
+└── templates           -> Páginas HTML utilizadas (Jinja2).
+    ├── admin.html      -> Painel de controle administrativo.
+    ├── base.html       -> Estrutura comum do site (cabeçalho, scripts, etc).
+    ├── calendar.html   -> Agenda únificada pública de eventos.
+    ├── group.html      -> Estrutura das páginas dos grupos.
+    ├── index.html      -> Homepage do site com busca de grupos.
+    ├── login.html      -> Formulário de autenticação para login.
+    └── components      -> Fragmentos a serem importados em outros arquivos.
+        ├── event_edit.html       -> Formulário de edição de eventos.
+        ├── event_row.html        -> Linha simples de eventos.
+        ├── event_row_admin.html  -> Linha com botões de excluir/editar.
+        └── group_list.html       -> Grid de grupos da Home.
+
 ### Como Logar no Painel Administrativo
 
 A plataforma suporta dois níveis de hierarquia de acesso (role-based) para facilitar o gerenciamento cooperativo:

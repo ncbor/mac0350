@@ -5,7 +5,7 @@
     <h1>Grupos de Extensão do IME-USP</h1>
     <p class="subtitle">Conheça, explore e participe dos grupos do Bacharelado em Ciência da Computação e de outros
         cursos do IME-USP :)</p>
-
+    <!-- Barra de busca e filtros (restaurada) -->
     <div class="search-container"
         style="display: flex; gap: 1rem; max-width: 600px; align-items: center; margin-bottom: 2rem;">
         <input class="search-input" style="flex: 1; margin: 0; padding: 0.8rem 1rem;" type="search" name="q"
@@ -18,6 +18,7 @@
         </select>
     </div>
 
+    <!-- Lista de grupos (carregada via componente) -->
     <div id="groups-grid">
         {% include "components/group_list.html" %}
     </div>

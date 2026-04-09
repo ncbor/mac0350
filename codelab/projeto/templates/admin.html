@@ -10,6 +10,7 @@
     {% endif %}
 </p>
 
+<!-- Tabela de Eventos -->
 <div class="table-container">
     <table>
         <thead>
@@ -33,6 +34,7 @@
     </table>
 </div>
 
+<!-- Cadastro de evento -->
 <h2 style="margin-top: 2rem;">Adicionar Evento</h2>
 <div class="card" style="margin-top: 1rem; padding: 2rem;">
     <form hx-post="/events" hx-target="#events-tbody" hx-swap="beforeend" hx-on::after-request="this.reset()">
@@ -40,16 +42,18 @@
             <label for="title">Título do Evento</label>
             <input type="text" id="title" name="title" required>
         </div>
+
         <div style="display: flex; gap: 1rem;">
             <div class="form-group" style="flex: 1;">
-                <label for="date">Data do Evento</label>
+                <label for="date">Data</label>
                 <input type="date" id="date" name="date" required>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label for="time">Hora do Evento</label>
+                <label for="time">Hora</label>
                 <input type="time" id="time" name="time" required>
             </div>
         </div>
+
         <div class="form-group">
             <label for="group_id">Grupo Organizador</label>
             <select id="group_id" name="group_id" required>
@@ -58,18 +62,22 @@
                 {% endfor %}
             </select>
         </div>
+
         <div class="form-group">
             <label for="location">Local</label>
             <input type="text" id="location" name="location">
         </div>
+
         <div class="form-group">
             <label for="description">Descrição</label>
             <textarea id="description" name="description" rows="3" required></textarea>
         </div>
+
         <button type="submit" class="btn">Cadastrar Evento</button>
     </form>
 </div>
 
+<!-- Perfil do Grupo (apenas se logado como grupo) -->
 {% if current_group %}
 <h2 style="margin-top: 3rem;">Configurações do Grupo</h2>
 <div class="card" style="margin-top: 1rem; padding: 2rem;">
@@ -85,75 +93,61 @@
         </div>
         <div style="display: flex; gap: 1rem;">
             <div class="form-group" style="flex: 1;">
-                <label>Logo (URL externa)</label>
+                <label>Logo (URL)</label>
                 <input type="text" name="logo_url" value="{{ current_group.logo_url }}">
             </div>
             <div class="form-group" style="flex: 1;">
-                <label>Ou subir arquivo de Logo</label>
+                <label>Ou subir arquivo!</label>
                 <input type="file" name="logo_file" accept="image/*">
             </div>
         </div>
-        <button type="submit" class="btn">Salvar Alterações do Perfil</button>
+        <button type="submit" class="btn">Salvar Alterações</button>
     </form>
 </div>
 {% endif %}
 
 <script>
-    const token = localStorage.getItem('token');
-    const noEventsMsg = document.getElementById('no-events-msg');
+    const t = localStorage.getItem('token');
+    const msgVazia = document.getElementById('no-events-msg');
 
-    function checkTableEmpty() {
-        // Conta quantas linhas de evento estão visíveis (excluindo a linha de "nenhum evento")
-        const visibleEvents = Array.from(document.querySelectorAll('.admin-event-row'))
-            .filter(row => row.style.display !== 'none');
-
-        if (visibleEvents.length === 0) {
-            noEventsMsg.style.display = '';
-        } else {
-            noEventsMsg.style.display = 'none';
-        }
+    // Verifica se a tabela está vazia (útil após filtros de grupo)
+    function checkVazio() {
+        const rows = Array.from(document.querySelectorAll('.admin-event-row'))
+            .filter(r => r.style.display !== 'none');
+        msgVazia.style.display = rows.length === 0 ? '' : 'none';
     }
 
-    if (!token) {
+    if (!t) {
         window.location.href = '/login';
     } else {
         try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload.role === "group") {
-                const groupId = payload.group_id;
+            const payload = JSON.parse(atob(t.split('.')[1]));
 
-                // Oculta eventos de outros grupos
-                document.querySelectorAll('.admin-event-row').forEach(row => {
-                    if (row.getAttribute('data-group-id') != groupId) {
-                        row.style.display = 'none';
-                    }
+            // Filtra tabela se for um grupo logado
+            if (payload.role === "group") {
+                const gid = payload.group_id;
+
+                document.querySelectorAll('.admin-event-row').forEach(r => {
+                    if (r.getAttribute('data-group-id') != gid) r.style.display = 'none';
                 });
 
-                // Trava o select para apenas o seu grupo
                 const select = document.getElementById('group_id');
                 Array.from(select.options).forEach(opt => {
-                    if (opt.value != groupId) {
-                        opt.disabled = true;
-                        opt.style.display = 'none';
-                    } else {
-                        opt.selected = true;
-                    }
+                    if (opt.value != gid) opt.style.display = 'none';
+                    else opt.selected = true;
                 });
             }
 
-            // Verifica se a tabela ficou vazia após o filtro
-            checkTableEmpty();
+            checkVazio();
 
-            // Re-verifica sempre que o HTMX adicionar um novo evento
-            document.body.addEventListener('htmx:afterSwap', function (evt) {
-                if (evt.detail.target.id === 'events-tbody') {
-                    checkTableEmpty();
-                }
+            // Re-verifica se a tabela está vazia após inclusão via HTMX
+            document.body.addEventListener('htmx:afterSwap', (e) => {
+                if (e.detail.target.id === 'events-tbody') checkVazio();
             });
 
         } catch (e) {
-            console.error("Token decoding error", e);
-            noEventsMsg.style.display = ''; // Fallback
+            console.error(e);
+            window.location.href = '/login';
         }
     }
 </script>

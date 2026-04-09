@@ -2,9 +2,10 @@
 
 {% block content %}
 <h1>Calendário Unificado</h1>
-<p class="subtitle">Acompanhe todos os eventos e administre sua agenda.</p>
+<p class="subtitle">Acompanhe os eventos dos grupos de extensão!</p>
 
-<div class="table-container">
+<!-- Eventos que ainda vão acontecer -->
+<div class="table-container" style="margin-top: 1rem; margin-bottom: 3rem;">
     <table>
         <thead>
             <tr>
@@ -15,20 +16,30 @@
                 <th>Descrição</th>
             </tr>
         </thead>
-        <tbody id="events-tbody">
+        <tbody>
             {% for event in future_events %}
-            {% include "components/event_row.html" %}
+            <tr>
+                <td>{{ event.date | datetime }}</td>
+                <td>
+                    {% for g in groups %}
+                    {% if g.id == event.group_id %}{{ g.name }}{% endif %}
+                    {% endfor %}
+                </td>
+                <td><strong>{{ event.title }}</strong></td>
+                <td>{{ event.location }}</td>
+            </tr>
             {% else %}
             <tr>
-                <td colspan="5">Nenhum evento programado.</td>
+                <td colspan="4">Nenhum evento programado (por enquanto).</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<h2 style="margin-top: 2rem;">Eventos Passados</h2>
-<div class="table-container" style="margin-top: 1rem; opacity: 0.7;">
+<!-- Histórico do que já passou -->
+<h2 style="opacity: 0.6;">Eventos Passados</h2>
+<div class="table-container" style="margin-top: 1rem; opacity: 0.6;">
     <table>
         <thead>
             <tr>
@@ -41,14 +52,21 @@
         </thead>
         <tbody>
             {% for event in past_events %}
-            {% include "components/event_row.html" %}
+            <tr>
+                <td>{{ event.date | datetime }}</td>
+                <td>
+                    {% for g in groups %}
+                    {% if g.id == event.group_id %}{{ g.name }}{% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ event.title }}</td>
+            </tr>
             {% else %}
             <tr>
-                <td colspan="5">Nenhum evento passado.</td>
+                <td colspan="3">Nenhum evento passado encontrado.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
 {% endblock %}

@@ -1,11 +1,15 @@
 <tr id="event-row-{{ event.id }}">
-    <td colspan="5" style="padding: 0;">
-        <form hx-put="/events/{{ event.id }}" hx-target="#event-row-{{ event.id }}" hx-swap="outerHTML" style="margin: 0; padding: 1rem; background: var(--bg-color); border: 1px solid var(--primary-hover);">
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <div class="form-group" style="flex: 1; min-width: 200px;">
+    <td colspan="6" style="padding: 0;">
+        <form hx-put="/events/{{ event.id }}" hx-target="#event-row-{{ event.id }}" hx-swap="outerHTML" 
+              style="margin: 0; padding: 1rem; background: var(--bg-color); border: 1px solid var(--primary);">
+            
+            <!-- Linha 1: Título e Data -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 2; min-width: 250px;">
                     <label>Título</label>
                     <input type="text" name="title" value="{{ event.title }}" required>
                 </div>
+                
                 <div style="display: flex; gap: 0.5rem; flex: 1; min-width: 200px;">
                     <div class="form-group" style="flex: 1;">
                         <label>Data</label>
@@ -16,10 +20,15 @@
                         <input type="time" name="time" value="{{ event.date[11:16] }}" required>
                     </div>
                 </div>
+            </div>
+
+            <!-- Linha 2: Local e Grupo -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 200px;">
                     <label>Local</label>
                     <input type="text" name="location" value="{{ event.location }}">
                 </div>
+
                 <div class="form-group" style="flex: 1; min-width: 200px;">
                     <label>Grupo</label>
                     <select name="group_id" required>
@@ -28,13 +37,17 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-group" style="flex: 1; min-width: 200px;">
+            </div>
+
+            <!-- Linha 3: Descrição e Ações -->
+            <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 2; min-width: 300px;">
                     <label>Descrição</label>
                     <input type="text" name="description" value="{{ event.description }}" required>
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 0.5rem; margin-bottom: 1rem;">
+
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
                     <button type="submit" class="btn">Salvar</button>
-                    <!-- Button to cancel editing: simply fetches the row back -->
                     <button type="button" class="btn btn-outline" 
                             hx-get="/events/{{ event.id }}/row_admin" 
                             hx-target="#event-row-{{ event.id }}" 

@@ -1,6 +1,7 @@
 from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
 
+# --- Grupos ---
 class ExtensionGroup(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
@@ -8,8 +9,10 @@ class ExtensionGroup(SQLModel, table=True):
     logo_url: str
     website: Optional[str] = Field(default=None)
     
+    # Relação com os eventos
     events: List["Event"] = Relationship(back_populates="group")
 
+# --- Eventos ---
 class Event(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str

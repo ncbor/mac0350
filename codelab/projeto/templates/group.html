@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Cabeçalho com infos do grupo -->
 <div class="card" style="margin-bottom: 2rem;">
     {% if group.logo_url %}
-    <img src="{{ group.logo_url }}" alt="Logo {{ group.name }}" style="max-height: 250px; object-fit: contain;">
+    <img src="{{ group.logo_url }}" alt="Logo {{ group.name }}" style="max-height: 250px;">
     {% endif %}
+
     <div class="card-content">
         <h1>{{ group.name }}</h1>
         <p class="subtitle">{{ group.description }}</p>
 
+        <!-- Botões de ação simulados -->
         <div style="margin-top: 2rem; display: flex; gap: 1rem;">
             <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Projetos</a>
             <a href="#" class="btn btn-outline" onclick="alert('Funcionalidade simulada')">Documentos</a>
@@ -22,13 +25,14 @@
     </div>
 </div>
 
-<h2>Próximos Eventos do {{ group.name }}</h2>
-<div class="table-container" style="margin-top: 1rem;">
+<!-- Lista de eventos futuros -->
+<h2>Próximos Eventos</h2>
+<div class="table-container" style="margin-top: 1rem; margin-bottom: 3rem;">
     <table>
         <thead>
             <tr>
                 <th>Data</th>
-                <th>Evento</th>
+                <th>Título</th>
                 <th>Local</th>
                 <th>Descrição</th>
             </tr>
@@ -50,8 +54,9 @@
     </table>
 </div>
 
-<h2 style="margin-top: 2rem;">Eventos Passados</h2>
-<div class="table-container" style="margin-top: 1rem; opacity: 0.7;">
+<!-- Lista de eventos que já passaram -->
+<h2 style="opacity: 0.6;">Eventos Passados</h2>
+<div class="table-container" style="margin-top: 1rem; opacity: 0.6;">
     <table>
         <thead>
             <tr>
@@ -71,14 +76,14 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="4">Nenhum evento passado.</td>
+                <td colspan="3">Nenhum evento passado encontrado.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<div style="margin-top: 2rem;">
-    <a href="/" class="btn btn-outline">Voltar</a>
+<div style="margin-top: 2.5rem;">
+    <a href="/" class="btn btn-outline">Voltar pra Home</a>
 </div>
 {% endblock %}
