@@ -1,2 +1,3 @@
-- Dark mode
 - Tirar lixos dos códigos
+- Adicionar reuniões semanais (para além de eventos)
+- Manter database fixa sem seed! O seed é apenas para a entrega, não para o desenvolvimento em produção.

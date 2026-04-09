@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <!-- Prevent flash of wrong theme -->
     <script>
-        (function() {
+        (function () {
             const saved = localStorage.getItem('theme');
             if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -26,7 +26,8 @@
     <header>
         <div class="header-left">
             <a href="/" class="logo">REGEx IME-USP</a>
-            <button type="button" id="theme-toggle" class="theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+            <button type="button" id="theme-toggle" class="theme-toggle" title="Alternar tema claro/escuro"
+                aria-label="Alternar tema">
             </button>
         </div>
         <nav class="nav-links">
@@ -42,7 +43,7 @@
                 const link = document.getElementById('login-link');
                 link.innerText = "Sair";
                 link.href = "#";
-                link.onclick = function(e) {
+                link.onclick = function (e) {
                     e.preventDefault();
                     localStorage.removeItem('token');
                     window.location.href = '/login';
@@ -50,7 +51,7 @@
             }
 
             // Dark mode toggle logic
-            (function() {
+            (function () {
                 var toggle = document.getElementById('theme-toggle');
                 var html = document.documentElement;
                 var moonSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
@@ -63,7 +64,7 @@
 
                 updateIcon();
 
-                toggle.onclick = function() {
+                toggle.onclick = function () {
                     html.classList.add('theme-transition');
                     var isDark = html.getAttribute('data-theme') === 'dark';
                     if (isDark) {
@@ -74,7 +75,7 @@
                         localStorage.setItem('theme', 'dark');
                     }
                     updateIcon();
-                    setTimeout(function() { html.classList.remove('theme-transition'); }, 350);
+                    setTimeout(function () { html.classList.remove('theme-transition'); }, 350);
                 };
             })();
         </script>

@@ -18,20 +18,20 @@
 </div>
 
 <script>
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const resp = await fetch('/token', {
-        method: 'POST',
-        body: formData
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const resp = await fetch('/token', {
+            method: 'POST',
+            body: formData
+        });
+        if (resp.ok) {
+            const data = await resp.json();
+            localStorage.setItem('token', data.access_token);
+            window.location.href = '/admin';
+        } else {
+            document.getElementById('error-msg').style.display = 'block';
+        }
     });
-    if (resp.ok) {
-        const data = await resp.json();
-        localStorage.setItem('token', data.access_token);
-        window.location.href = '/admin';
-    } else {
-        document.getElementById('error-msg').style.display = 'block';
-    }
-});
 </script>
 {% endblock %}

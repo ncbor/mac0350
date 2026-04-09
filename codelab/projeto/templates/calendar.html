@@ -17,7 +17,7 @@
         </thead>
         <tbody id="events-tbody">
             {% for event in future_events %}
-                {% include "components/event_row.html" %}
+            {% include "components/event_row.html" %}
             {% else %}
             <tr>
                 <td colspan="5">Nenhum evento programado.</td>
@@ -41,7 +41,7 @@
         </thead>
         <tbody>
             {% for event in past_events %}
-                {% include "components/event_row.html" %}
+            {% include "components/event_row.html" %}
             {% else %}
             <tr>
                 <td colspan="5">Nenhum evento passado.</td>

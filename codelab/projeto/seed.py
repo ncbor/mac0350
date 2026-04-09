@@ -34,6 +34,7 @@ def seed_data():
 
         usp_codelab = next((g for g in groups if g.name == "CodeLab"), groups[0])
         usp_gamedev = next((g for g in groups if g.name == "USPGameDev"), groups[0])
+        imesec = next((g for g in groups if g.name == "IMEsec"), groups[0])
 
         e1 = Event(
             title="Aula de WebMAC #10",
@@ -49,6 +50,14 @@ def seed_data():
             description="Maratona de desenvolvimento de jogos em 48h.",
             group_id=usp_gamedev.id
         )
+        e3 = Event(
+            title="CyberCafé 2026.1",
+            date="2026-06-08T13:00:00",
+            location="Auditório Jacy Monteiro",
+            description="Colóquios de Cibersegurança (com surpresas rs).",
+            group_id=imesec.id
+        )
+        
 
         session.add(e1)
         session.add(e2)
