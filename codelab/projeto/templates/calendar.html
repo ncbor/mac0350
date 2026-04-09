@@ -27,10 +27,11 @@
                 </td>
                 <td><strong>{{ event.title }}</strong></td>
                 <td>{{ event.location }}</td>
+                <td>{{ event.description }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="4">Nenhum evento programado (por enquanto).</td>
+                <td colspan="5">Nenhum evento programado (por enquanto).</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -60,10 +61,12 @@
                     {% endfor %}
                 </td>
                 <td>{{ event.title }}</td>
+                <td>{{ event.location }}</td>
+                <td>{{ event.description }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">Nenhum evento passado encontrado.</td>
+                <td colspan="5">Nenhum evento passado encontrado.</td>
             </tr>
             {% endfor %}
         </tbody>
