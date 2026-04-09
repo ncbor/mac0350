@@ -1,6 +1,9 @@
 # Diretório para a Disciplina de MAC0350
 
-Organização:
+## Organização:
+
+```
+.
 ├── README.md -> este arquivo
 │
 ├── codelab -> primeira parte da disciplina, individual.
@@ -9,3 +12,4 @@ Organização:
 │
 └── paulo -> onde terá o projeto final da disciplina
     └── README.md
+```
